@@ -1,10 +1,18 @@
 "use client";
 
-import { useEffect } from "react";
+import { Suspense, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 
 export default function RedirectPage() {
+  return (
+    <Suspense fallback={null}>
+      <RedirectContent />
+    </Suspense>
+  );
+}
+
+function RedirectContent() {
   const searchParams = useSearchParams();
   const url = searchParams.get("url") || "";
   const brand = searchParams.get("brand") || "the store";

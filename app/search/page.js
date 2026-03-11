@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { Suspense, useState, useMemo } from "react";
 import { useSearchParams } from "next/navigation";
 import { searchProducts, searchCoupons } from "@/lib/placeholder-data";
 import BreadcrumbNav from "@/components/ui/BreadcrumbNav";
@@ -15,6 +15,14 @@ const breadcrumbs = [
 ];
 
 export default function SearchPage() {
+  return (
+    <Suspense fallback={null}>
+      <SearchContent />
+    </Suspense>
+  );
+}
+
+function SearchContent() {
   const searchParams = useSearchParams();
   const query = searchParams.get("q") || "";
   const [activeTab, setActiveTab] = useState("products");

@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useCallback } from "react";
+import { Suspense, useMemo, useCallback } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import {
   placeholderProducts,
@@ -16,6 +16,14 @@ import ProductGrid from "@/components/product/ProductGrid";
 const PRODUCTS_PER_PAGE = 8;
 
 export default function ProductsPage() {
+  return (
+    <Suspense fallback={null}>
+      <ProductsContent />
+    </Suspense>
+  );
+}
+
+function ProductsContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
 

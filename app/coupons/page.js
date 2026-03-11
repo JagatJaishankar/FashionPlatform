@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, useCallback } from "react";
+import { Suspense, useMemo, useState, useCallback } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { placeholderCoupons, placeholderBrands } from "@/lib/placeholder-data";
 import BreadcrumbNav from "@/components/ui/BreadcrumbNav";
@@ -20,6 +20,14 @@ const couponBrands = placeholderBrands.filter((b) =>
 );
 
 export default function CouponsPage() {
+  return (
+    <Suspense fallback={null}>
+      <CouponsContent />
+    </Suspense>
+  );
+}
+
+function CouponsContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const [activeCoupon, setActiveCoupon] = useState(null);

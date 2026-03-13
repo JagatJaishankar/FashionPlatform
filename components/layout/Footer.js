@@ -4,7 +4,7 @@ export default function Footer() {
   return (
     <footer className="bg-base-100 border-t border-base-300 pt-12 pb-8">
       <div className="max-w-[1520px] mx-auto px-4 md:px-6 lg:px-8">
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
+        <div className="grid grid-cols-2 lg:grid-cols-5 gap-8 lg:gap-12">
           {/* Brand */}
           <div className="col-span-2 lg:col-span-1">
             <Link href="/" className="font-display text-2xl text-base-content">
@@ -53,6 +53,24 @@ export default function Footer() {
               </Link>
               <Link href="/coupons?view=latest" className="text-sm text-secondary hover:text-base-content transition-colors">
                 Latest Codes
+              </Link>
+            </nav>
+          </div>
+
+          {/* Account */}
+          <div>
+            <h4 className="text-[11px] tracking-[0.2em] uppercase text-base-content mb-4 font-body font-semibold">
+              Account
+            </h4>
+            <nav className="flex flex-col gap-2">
+              <Link href="/account" className="text-sm text-secondary hover:text-base-content transition-colors">
+                My Account
+              </Link>
+              <Link href="/wishlist" className="text-sm text-secondary hover:text-base-content transition-colors">
+                Wishlist
+              </Link>
+              <Link href="/login" className="text-sm text-secondary hover:text-base-content transition-colors">
+                Sign In
               </Link>
             </nav>
           </div>

@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 
 const subcategories = [
   { name: "Clothing", slug: "clothing" },
@@ -12,15 +12,29 @@ const subcategories = [
 ];
 
 const navLinks = [
-  { label: "Brands", href: "/brands" },
-  { label: "Coupons", href: "/coupons" },
-  { label: "Blog", href: "/blog" },
+  { label: "Brands", href: "/brands", match: "/brands" },
+  { label: "Coupons", href: "/coupons", match: "/coupons" },
+  { label: "Blog", href: "/blog", match: "/blog" },
 ];
 
 export default function MobileDrawer({ isOpen, onClose }) {
-  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
   const [womenExpanded, setWomenExpanded] = useState(false);
-  const [searchValue, setSearchValue] = useState("");
+
+  const currentCategory = searchParams.get("category") || "";
+
+  function isWomenActive() {
+    return pathname === "/products" || pathname.startsWith("/products/");
+  }
+
+  function isLinkActive(match) {
+    return pathname === match || pathname.startsWith(match + "/");
+  }
+
+  function isCategoryActive(slug) {
+    return pathname === "/products" && currentCategory === slug;
+  }
 
   const handleEscape = useCallback(
     (e) => {
@@ -39,19 +53,6 @@ export default function MobileDrawer({ isOpen, onClose }) {
       document.body.classList.remove("overflow-hidden");
     };
   }, [isOpen, handleEscape]);
-
-  function handleSearch() {
-    const q = searchValue.trim();
-    if (q) {
-      router.push(`/search?q=${encodeURIComponent(q)}`);
-      setSearchValue("");
-      onClose();
-    }
-  }
-
-  function handleSearchKeyDown(e) {
-    if (e.key === "Enter") handleSearch();
-  }
 
   if (!isOpen) return null;
 
@@ -80,12 +81,7 @@ export default function MobileDrawer({ isOpen, onClose }) {
             className="text-secondary hover:text-base-content transition-colors cursor-pointer"
             aria-label="Close menu"
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-              className="w-5 h-5"
-            >
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5">
               <path d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z" />
             </svg>
           </button>
@@ -100,7 +96,13 @@ export default function MobileDrawer({ isOpen, onClose }) {
               onClick={() => setWomenExpanded(!womenExpanded)}
               className="flex items-center justify-between w-full py-3 cursor-pointer"
             >
-              <span className="text-lg font-display text-base-content">
+              <span
+                className={`text-lg font-display ${
+                  isWomenActive()
+                    ? "text-base-content font-semibold"
+                    : "text-base-content"
+                }`}
+              >
                 Women
               </span>
               <svg
@@ -121,7 +123,7 @@ export default function MobileDrawer({ isOpen, onClose }) {
                 <Link
                   href="/products"
                   onClick={onClose}
-                  className="text-sm font-body text-secondary hover:text-base-content transition-colors py-1.5"
+                  className="text-sm font-body font-medium text-secondary hover:text-base-content transition-colors py-1.5"
                 >
                   Shop All
                 </Link>
@@ -130,7 +132,11 @@ export default function MobileDrawer({ isOpen, onClose }) {
                     key={cat.slug}
                     href={`/products?category=${cat.slug}`}
                     onClick={onClose}
-                    className="text-sm font-body text-secondary hover:text-base-content transition-colors py-1.5"
+                    className={`text-sm font-body font-medium py-1.5 transition-colors ${
+                      isCategoryActive(cat.slug)
+                        ? "text-base-content font-semibold"
+                        : "text-secondary hover:text-base-content"
+                    }`}
                   >
                     {cat.name}
                   </Link>
@@ -144,44 +150,43 @@ export default function MobileDrawer({ isOpen, onClose }) {
               key={link.href}
               href={link.href}
               onClick={onClose}
-              className="block text-lg font-display text-base-content py-3 border-b border-base-300"
+              className={`block text-lg font-display py-3 border-b border-base-300 ${
+                isLinkActive(link.match)
+                  ? "text-base-content font-semibold"
+                  : "text-base-content"
+              }`}
             >
               {link.label}
             </Link>
           ))}
         </nav>
 
-        {/* Bottom search */}
-        <div className="px-4 py-4 border-t border-base-300 shrink-0">
-          <div className="relative border-b border-base-300 focus-within:border-base-content transition-colors">
-            <button
-              type="button"
-              onClick={handleSearch}
-              className="absolute left-0 top-1/2 -translate-y-1/2 text-secondary hover:text-base-content transition-colors cursor-pointer"
-              aria-label="Search"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-                className="w-4 h-4"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z"
-                  clipRule="evenodd"
-                />
-              </svg>
-            </button>
-            <input
-              type="text"
-              value={searchValue}
-              onChange={(e) => setSearchValue(e.target.value)}
-              onKeyDown={handleSearchKeyDown}
-              placeholder="Search products, brands..."
-              className="bg-transparent w-full py-2 pl-7 text-sm font-body text-base-content placeholder:text-secondary/50 outline-none"
-            />
-          </div>
+        {/* Bottom: Account links */}
+        <div className="px-4 py-4 border-t border-base-300 shrink-0 space-y-2">
+          <Link
+            href="/account"
+            onClick={onClose}
+            className="flex items-center gap-2 text-sm font-body font-medium text-base-content hover:text-primary transition-colors py-1.5"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+            </svg>
+            My Account
+          </Link>
+          <Link
+            href="/login"
+            onClick={onClose}
+            className="block w-full text-center border border-base-content px-3 py-2 text-xs tracking-wider uppercase font-semibold font-body text-base-content hover:bg-base-content hover:text-base-100 transition-colors"
+          >
+            Sign In
+          </Link>
+          <Link
+            href="/register"
+            onClick={onClose}
+            className="block w-full text-center text-xs font-body text-secondary hover:text-base-content transition-colors py-1"
+          >
+            Create Account
+          </Link>
         </div>
       </div>
     </div>

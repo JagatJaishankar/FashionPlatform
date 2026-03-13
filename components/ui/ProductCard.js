@@ -1,20 +1,68 @@
+"use client";
+
+import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { formatPrice, getDiscountPercentage } from "@/lib/utils";
+import { useWishlist } from "@/lib/wishlist-context";
+import { useQuickView } from "@/lib/quickview-context";
 
 export default function ProductCard({
+  id,
   slug,
   name,
   brand,
+  brandSlug,
   price,
   originalPrice,
   image,
   tags = [],
+  merchant,
+  redirectUrl,
+  category,
+  categorySlug,
   className = "",
 }) {
+  const { isInWishlist, addToWishlist, removeFromWishlist } = useWishlist();
+  const { openQuickView } = useQuickView();
+  const [heartScale, setHeartScale] = useState(false);
+
   const hasSale = tags.includes("sale") && originalPrice;
   const hasTrending = tags.includes("trending");
   const discount = hasSale ? getDiscountPercentage(price, originalPrice) : 0;
+  const wishlisted = isInWishlist(id);
+
+  function handleWishlistClick(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    setHeartScale(true);
+    setTimeout(() => setHeartScale(false), 200);
+    if (wishlisted) {
+      removeFromWishlist(id);
+    } else {
+      addToWishlist(id);
+    }
+  }
+
+  function handleQuickView(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    openQuickView({
+      id,
+      slug,
+      name,
+      brand,
+      brandSlug,
+      price,
+      originalPrice,
+      image,
+      tags,
+      merchant,
+      redirectUrl,
+      category,
+      categorySlug,
+    });
+  }
 
   return (
     <Link href={`/products/${slug}`} className={`group block ${className}`}>
@@ -26,6 +74,7 @@ export default function ProductCard({
           sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"
           className="object-cover transition-transform duration-500 group-hover:scale-105"
         />
+        {/* Tag badges — top left */}
         {(hasSale || hasTrending) && (
           <div className="absolute top-3 left-3 flex flex-col gap-1.5">
             {hasSale && (
@@ -40,6 +89,62 @@ export default function ProductCard({
             )}
           </div>
         )}
+
+        {/* Wishlist heart — top right */}
+        <button
+          type="button"
+          onClick={handleWishlistClick}
+          className={`absolute top-3 right-3 w-8 h-8 flex items-center justify-center cursor-pointer transition-all duration-200 ${
+            wishlisted
+              ? "bg-base-100/80 backdrop-blur-sm text-error opacity-100"
+              : "bg-base-100/80 backdrop-blur-sm text-base-content/50 opacity-100 md:opacity-0 md:group-hover:opacity-100 hover:text-base-content"
+          } ${heartScale ? "scale-125" : "scale-100"}`}
+          aria-label={wishlisted ? "Remove from wishlist" : "Add to wishlist"}
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            className="w-[18px] h-[18px]"
+            fill={wishlisted ? "currentColor" : "none"}
+            stroke="currentColor"
+            strokeWidth={wishlisted ? 0 : 1.5}
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z"
+            />
+          </svg>
+        </button>
+
+        {/* Quick View eye icon — mobile only, below heart */}
+        <button
+          type="button"
+          onClick={handleQuickView}
+          className="md:hidden absolute top-13 right-3 w-8 h-8 flex items-center justify-center bg-base-100/80 backdrop-blur-sm text-base-content/50 cursor-pointer"
+          aria-label="Quick view"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth={1.5}
+            stroke="currentColor"
+            className="w-[18px] h-[18px]"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
+            <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+          </svg>
+        </button>
+
+        {/* Quick View bar — desktop hover */}
+        <button
+          type="button"
+          onClick={handleQuickView}
+          className="hidden md:block absolute bottom-0 left-0 right-0 bg-base-content/90 text-base-100 text-center py-2.5 text-[11px] tracking-[0.2em] uppercase font-semibold font-body opacity-0 translate-y-full group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 cursor-pointer"
+        >
+          Quick View
+        </button>
       </div>
       <p className="text-[11px] tracking-[0.15em] uppercase text-secondary mt-3 font-body">
         {brand}

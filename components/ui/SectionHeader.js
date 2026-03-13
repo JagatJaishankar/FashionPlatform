@@ -21,9 +21,15 @@ export default function SectionHeader({
         {linkLabel && linkHref && (
           <Link
             href={linkHref}
-            className="text-[11px] tracking-[0.15em] uppercase text-secondary hover:text-base-content transition-colors font-body flex items-center gap-1 mt-3"
+            className="text-[11px] tracking-[0.15em] uppercase text-base-content font-medium hover:text-primary hover:underline underline-offset-4 transition-colors font-body flex items-center gap-1 mt-3 group"
           >
-            {linkLabel} <span aria-hidden="true">&rarr;</span>
+            {linkLabel}{" "}
+            <span
+              className="inline-block transition-transform group-hover:translate-x-0.5"
+              aria-hidden="true"
+            >
+              &rarr;
+            </span>
           </Link>
         )}
       </div>
@@ -46,9 +52,15 @@ export default function SectionHeader({
         {linkLabel && linkHref && (
           <Link
             href={linkHref}
-            className="text-[11px] tracking-[0.15em] uppercase text-secondary hover:text-base-content transition-colors font-body flex items-center gap-1 shrink-0"
+            className="text-[11px] tracking-[0.15em] uppercase text-base-content font-medium hover:text-primary hover:underline underline-offset-4 transition-colors font-body flex items-center gap-1 shrink-0 group"
           >
-            {linkLabel} <span aria-hidden="true">&rarr;</span>
+            {linkLabel}{" "}
+            <span
+              className="inline-block transition-transform group-hover:translate-x-0.5"
+              aria-hidden="true"
+            >
+              &rarr;
+            </span>
           </Link>
         )}
       </div>

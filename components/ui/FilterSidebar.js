@@ -49,7 +49,7 @@ function FilterSection({ title, defaultOpen = true, children }) {
 
 function CheckboxItem({ label, count, checked, onChange }) {
   return (
-    <label className="flex items-center justify-between py-1.5 cursor-pointer group">
+    <label className="flex items-center justify-between py-2.5 cursor-pointer group">
       <span className="flex items-center gap-2">
         <input
           type="checkbox"
@@ -210,15 +210,15 @@ export default function FilterSidebar({
             className="absolute inset-0 bg-neutral/50 backdrop-blur-sm"
             onClick={() => setMobileOpen(false)}
           />
-          <div className="absolute inset-y-0 left-0 w-full max-w-xs bg-base-100 overflow-y-auto">
-            <div className="flex items-center justify-between p-4 border-b border-base-300">
+          <div className="absolute inset-0 bg-base-100 overflow-y-auto">
+            <div className="flex items-center justify-between px-4 h-14 border-b border-base-300">
               <span className="text-[11px] tracking-[0.2em] uppercase font-body font-semibold">
                 Filters
               </span>
               <button
                 type="button"
                 onClick={() => setMobileOpen(false)}
-                className="text-secondary hover:text-base-content transition-colors cursor-pointer p-1"
+                className="text-secondary hover:text-base-content transition-colors cursor-pointer w-10 h-10 flex items-center justify-center -mr-2"
                 aria-label="Close filters"
               >
                 <svg

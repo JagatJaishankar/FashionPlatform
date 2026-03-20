@@ -7,6 +7,7 @@ import {
   getProductsByCategory,
 } from "@/lib/placeholder-data";
 
+import BannerCarousel from "@/components/home/BannerCarousel";
 import TrendingProducts from "@/components/home/TrendingProducts";
 import LatestCoupons from "@/components/home/LatestCoupons";
 import CategoryProductRow from "@/components/home/CategoryProductRow";
@@ -33,7 +34,10 @@ const featuredBrands = placeholderBrands.slice(0, 10);
 export default function Home() {
   return (
     <main>
-      <TrendingProducts products={trendingProducts} />
+      <BannerCarousel />
+      <div className="mt-8 md:mt-12">
+        <TrendingProducts products={trendingProducts} />
+      </div>
       <LatestCoupons coupons={latestCoupons} />
       <CategoryProductRow
         categoryName="Clothing"

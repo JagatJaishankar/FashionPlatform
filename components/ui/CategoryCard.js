@@ -15,9 +15,9 @@ export default function CategoryCard({ name, slug, image, productCount }) {
         className="object-cover transition-transform duration-700 group-hover:scale-105"
       />
       <div className="absolute inset-0 bg-gradient-to-t from-neutral/60 via-transparent to-transparent" />
-      <div className="absolute bottom-0 left-0 p-4">
-        <h3 className="font-display text-2xl text-neutral-content">{name}</h3>
-        <p className="text-xs text-neutral-content/70 tracking-wider uppercase mt-0.5">
+      <div className="absolute bottom-0 left-0 p-3 md:p-4">
+        <h3 className="font-display text-xl md:text-2xl text-neutral-content">{name}</h3>
+        <p className="text-[10px] md:text-xs text-neutral-content/70 tracking-wider uppercase mt-0.5">
           {productCount} products
         </p>
       </div>

@@ -46,13 +46,13 @@ export default function CouponCard({
       <p className="text-xs text-secondary mt-1 line-clamp-2">
         {description}
       </p>
-      <div className="flex items-center justify-between mt-4 bg-base-200 px-3 py-2">
-        <span className="font-mono text-sm font-semibold tracking-wider">
+      <div className="flex items-center justify-between mt-4 bg-base-200 px-3 py-2 min-w-0">
+        <span className="font-mono text-xs sm:text-sm font-semibold tracking-wider truncate mr-2">
           {code}
         </span>
         <button
           onClick={handleCopy}
-          className="text-[10px] tracking-wider uppercase font-semibold text-primary hover:text-base-content transition-colors cursor-pointer py-1 pl-2"
+          className="text-[10px] tracking-wider uppercase font-semibold text-primary hover:text-base-content transition-colors cursor-pointer py-1 pl-2 shrink-0"
         >
           {copied ? "Copied!" : "Copy"}
         </button>

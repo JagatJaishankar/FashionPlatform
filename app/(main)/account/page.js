@@ -1,11 +1,5 @@
-"use client";
-
-import { useMemo } from "react";
 import Link from "next/link";
-import { useWishlist } from "@/lib/wishlist-context";
-import { placeholderProducts } from "@/lib/placeholder-data";
 import BreadcrumbNav from "@/components/ui/BreadcrumbNav";
-import ProductCard from "@/components/ui/ProductCard";
 
 const breadcrumbs = [
   { label: "Home", href: "/" },
@@ -13,17 +7,6 @@ const breadcrumbs = [
 ];
 
 export default function AccountPage() {
-  const { wishlistItems } = useWishlist();
-
-  const wishlistPreview = useMemo(
-    () =>
-      wishlistItems
-        .slice(0, 4)
-        .map((id) => placeholderProducts.find((p) => p.id === id))
-        .filter(Boolean),
-    [wishlistItems]
-  );
-
   return (
     <main className="max-w-[1520px] mx-auto px-4 md:px-6 lg:px-8 py-6 md:py-10">
       <BreadcrumbNav items={breadcrumbs} />
@@ -68,38 +51,26 @@ export default function AccountPage() {
           <p className="text-sm text-secondary font-body">No orders yet</p>
         </section>
 
-        {/* Wishlist preview */}
+        {/* Wishlist */}
         <section className="border border-base-300 p-6">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-[11px] tracking-[0.2em] uppercase text-secondary font-body font-semibold">
-              Wishlist
-            </h2>
-            {wishlistPreview.length > 0 && (
-              <Link
-                href="/wishlist"
-                className="text-sm font-medium text-base-content hover:text-primary transition-colors group"
-              >
-                View All{" "}
-                <span
-                  className="inline-block transition-transform group-hover:translate-x-0.5"
-                  aria-hidden="true"
-                >
-                  &rarr;
-                </span>
-              </Link>
-            )}
-          </div>
-          {wishlistPreview.length === 0 ? (
-            <p className="text-sm text-secondary font-body">
-              No items in your wishlist yet
-            </p>
-          ) : (
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {wishlistPreview.map((product) => (
-                <ProductCard key={product.id} {...product} />
-              ))}
-            </div>
-          )}
+          <h2 className="text-[11px] tracking-[0.2em] uppercase text-secondary font-body font-semibold mb-4">
+            Wishlist
+          </h2>
+          <p className="text-sm text-secondary font-body">
+            Sign in to view and manage your saved items.
+          </p>
+          <Link
+            href="/wishlist"
+            className="text-sm font-medium text-base-content hover:text-primary transition-colors mt-3 inline-block group"
+          >
+            Go to Wishlist{" "}
+            <span
+              className="inline-block transition-transform group-hover:translate-x-0.5"
+              aria-hidden="true"
+            >
+              &rarr;
+            </span>
+          </Link>
         </section>
 
         {/* Sign Out */}

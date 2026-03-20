@@ -101,39 +101,40 @@ export default function SearchOverlay({ isOpen, onClose }) {
     <>
       {/* Desktop overlay */}
       <div className="hidden lg:block fixed inset-0 z-40">
-        <div className="absolute inset-0 bg-neutral/20" onClick={onClose} />
+        <div className="absolute inset-0 bg-neutral/30 backdrop-blur-sm" onClick={onClose} />
         <div className="absolute top-[calc(3.5rem+1px)] left-0 right-0 bg-base-100 border-b border-base-300 shadow-lg">
-          <div className="max-w-[1520px] mx-auto px-4 md:px-6 lg:px-8 py-6">
-            <div className="flex items-center gap-4">
-              <div className="flex-1 border-b border-base-300 focus-within:border-base-content transition-colors">
-                <input
-                  ref={inputRef}
-                  type="text"
-                  value={query}
-                  onChange={handleInputChange}
-                  onKeyDown={handleKeyDown}
-                  placeholder="Search products, brands..."
-                  className="bg-transparent w-full py-2 text-lg font-body text-base-content placeholder:text-secondary/50 outline-none"
-                />
-              </div>
-              <button
-                type="button"
-                onClick={onClose}
-                className="text-secondary hover:text-base-content transition-colors cursor-pointer"
-                aria-label="Close search"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5">
-                  <path d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z" />
-                </svg>
-              </button>
+          <div className="max-w-[1520px] mx-auto px-12 py-8">
+            {/* Close button */}
+            <button
+              type="button"
+              onClick={onClose}
+              className="absolute top-6 right-6 w-10 h-10 flex items-center justify-center text-secondary hover:text-base-content hover:bg-base-200 transition-colors cursor-pointer"
+              aria-label="Close search"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5">
+                <path d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z" />
+              </svg>
+            </button>
+
+            {/* Search input — large, bottom-border style */}
+            <div className="border-b-2 border-base-300 focus-within:border-base-content transition-colors">
+              <input
+                ref={inputRef}
+                type="text"
+                value={query}
+                onChange={handleInputChange}
+                onKeyDown={handleKeyDown}
+                placeholder="Search products, brands..."
+                className="bg-transparent w-full py-4 text-xl md:text-2xl font-body text-base-content placeholder:text-secondary/40 outline-none"
+              />
             </div>
 
             {/* Results */}
             {hasResults && (
-              <div className="flex gap-8 mt-6 max-h-[60vh] overflow-y-auto">
+              <div className="flex gap-10 mt-8 max-h-[55vh] overflow-y-auto">
                 {/* Products column */}
                 <div className="w-3/5">
-                  <h3 className="text-[11px] tracking-[0.2em] uppercase text-secondary font-body mb-3">
+                  <h3 className="text-[11px] tracking-[0.2em] uppercase text-secondary font-body mb-4">
                     Products
                   </h3>
                   <div className="flex flex-col">
@@ -142,14 +143,14 @@ export default function SearchOverlay({ isOpen, onClose }) {
                         key={product.id}
                         href={`/products/${product.slug}`}
                         onClick={handleResultClick}
-                        className="flex items-center gap-3 py-2.5 px-2 hover:bg-base-200 transition-colors"
+                        className="flex items-center gap-4 py-3 px-2 hover:bg-base-200 transition-colors"
                       >
-                        <div className="relative w-12 h-12 bg-base-200 shrink-0 overflow-hidden">
+                        <div className="relative w-14 h-14 bg-base-200 shrink-0 overflow-hidden">
                           <Image
                             src={product.image}
                             alt={product.name}
                             fill
-                            sizes="48px"
+                            sizes="56px"
                             className="object-cover"
                           />
                         </div>
@@ -157,7 +158,7 @@ export default function SearchOverlay({ isOpen, onClose }) {
                           <p className="text-sm font-medium text-base-content truncate">
                             {product.name}
                           </p>
-                          <p className="text-xs text-secondary">{product.brand}</p>
+                          <p className="text-xs text-secondary mt-0.5">{product.brand}</p>
                         </div>
                         <span className="text-sm font-semibold text-base-content ml-auto shrink-0">
                           {formatPrice(product.price)}
@@ -170,8 +171,8 @@ export default function SearchOverlay({ isOpen, onClose }) {
                 {/* Right column */}
                 <div className="w-2/5">
                   {results.brands.length > 0 && (
-                    <div className="mb-6">
-                      <h3 className="text-[11px] tracking-[0.2em] uppercase text-secondary font-body mb-3">
+                    <div className="mb-8">
+                      <h3 className="text-[11px] tracking-[0.2em] uppercase text-secondary font-body mb-4">
                         Brands
                       </h3>
                       <div className="flex flex-wrap gap-2">
@@ -190,7 +191,7 @@ export default function SearchOverlay({ isOpen, onClose }) {
                   )}
                   {results.categories.length > 0 && (
                     <div>
-                      <h3 className="text-[11px] tracking-[0.2em] uppercase text-secondary font-body mb-3">
+                      <h3 className="text-[11px] tracking-[0.2em] uppercase text-secondary font-body mb-4">
                         Categories
                       </h3>
                       <div className="flex flex-col gap-1">
@@ -212,13 +213,13 @@ export default function SearchOverlay({ isOpen, onClose }) {
             )}
 
             {showNoResults && (
-              <p className="text-sm text-secondary mt-6">
+              <p className="text-sm text-secondary mt-8">
                 No results found for &ldquo;{query.trim()}&rdquo;
               </p>
             )}
 
             {hasResults && (
-              <div className="mt-4 pt-4 border-t border-base-300">
+              <div className="mt-6 pt-6 border-t border-base-300">
                 <Link
                   href={`/search?q=${encodeURIComponent(query.trim())}`}
                   onClick={handleResultClick}
@@ -237,30 +238,32 @@ export default function SearchOverlay({ isOpen, onClose }) {
 
       {/* Mobile full-screen overlay */}
       <div className="lg:hidden fixed inset-0 z-50 bg-base-100">
-        <div className="flex items-center h-14 px-4 gap-3 border-b border-base-300">
+        <div className="flex items-center h-14 px-6 gap-3 border-b border-base-300">
           <button
             type="button"
             onClick={onClose}
-            className="text-secondary hover:text-base-content transition-colors cursor-pointer shrink-0"
-            aria-label="Close search"
+            className="text-secondary hover:text-base-content transition-colors cursor-pointer shrink-0 w-10 h-10 flex items-center justify-center -ml-2"
+            aria-label="Go back"
           >
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5">
               <path fillRule="evenodd" d="M17 10a.75.75 0 01-.75.75H5.612l4.158 3.96a.75.75 0 11-1.04 1.08l-5.5-5.25a.75.75 0 010-1.08l5.5-5.25a.75.75 0 111.04 1.08L5.612 9.25H16.25A.75.75 0 0117 10z" clipRule="evenodd" />
             </svg>
           </button>
-          <input
-            ref={inputRef}
-            type="text"
-            value={query}
-            onChange={handleInputChange}
-            onKeyDown={handleKeyDown}
-            placeholder="Search products, brands..."
-            className="bg-transparent flex-1 text-sm font-body text-base-content placeholder:text-secondary/50 outline-none"
-          />
+          <div className="flex-1 border-b border-base-300 focus-within:border-base-content transition-colors">
+            <input
+              ref={inputRef}
+              type="text"
+              value={query}
+              onChange={handleInputChange}
+              onKeyDown={handleKeyDown}
+              placeholder="Search products, brands..."
+              className="bg-transparent w-full py-2 text-lg font-body text-base-content placeholder:text-secondary/50 outline-none"
+            />
+          </div>
           <button
             type="button"
             onClick={handleSubmit}
-            className="text-base-content cursor-pointer shrink-0"
+            className="text-base-content cursor-pointer shrink-0 w-10 h-10 flex items-center justify-center -mr-2"
             aria-label="Search"
           >
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
@@ -269,7 +272,7 @@ export default function SearchOverlay({ isOpen, onClose }) {
           </button>
         </div>
 
-        <div className="overflow-y-auto h-[calc(100vh-3.5rem)] px-4 py-4">
+        <div className="overflow-y-auto h-[calc(100vh-3.5rem)] px-6 py-6">
           {hasResults && (
             <>
               {results.products.length > 0 && (
@@ -283,14 +286,14 @@ export default function SearchOverlay({ isOpen, onClose }) {
                         key={product.id}
                         href={`/products/${product.slug}`}
                         onClick={handleResultClick}
-                        className="flex items-center gap-3 py-2.5 hover:bg-base-200 transition-colors"
+                        className="flex items-center gap-3 py-3 hover:bg-base-200 transition-colors"
                       >
-                        <div className="relative w-12 h-12 bg-base-200 shrink-0 overflow-hidden">
+                        <div className="relative w-14 h-14 bg-base-200 shrink-0 overflow-hidden">
                           <Image
                             src={product.image}
                             alt={product.name}
                             fill
-                            sizes="48px"
+                            sizes="56px"
                             className="object-cover"
                           />
                         </div>
@@ -298,7 +301,7 @@ export default function SearchOverlay({ isOpen, onClose }) {
                           <p className="text-sm font-medium text-base-content truncate">
                             {product.name}
                           </p>
-                          <p className="text-xs text-secondary">{product.brand}</p>
+                          <p className="text-xs text-secondary mt-0.5">{product.brand}</p>
                         </div>
                         <span className="text-sm font-semibold text-base-content shrink-0">
                           {formatPrice(product.price)}
@@ -340,7 +343,7 @@ export default function SearchOverlay({ isOpen, onClose }) {
                         key={cat.slug}
                         href={`/products?category=${cat.slug}`}
                         onClick={handleResultClick}
-                        className="text-sm text-base-content hover:text-primary transition-colors py-1"
+                        className="text-sm text-base-content hover:text-primary transition-colors py-1.5"
                       >
                         {cat.name}
                       </Link>

@@ -30,7 +30,7 @@ export default function Pagination({ currentPage, totalPages, onPageChange }) {
         type="button"
         onClick={() => onPageChange(currentPage - 1)}
         disabled={currentPage <= 1}
-        className="join-item btn btn-sm btn-ghost disabled:opacity-30 cursor-pointer"
+        className="join-item btn btn-sm btn-ghost disabled:opacity-30 cursor-pointer min-w-10 min-h-10"
         aria-label="Previous page"
       >
         <svg
@@ -47,35 +47,41 @@ export default function Pagination({ currentPage, totalPages, onPageChange }) {
         </svg>
       </button>
 
-      {pages.map((page, i) =>
-        page === "..." ? (
-          <span
-            key={`ellipsis-${i}`}
-            className="px-2 text-sm text-secondary select-none"
-          >
-            &hellip;
-          </span>
-        ) : (
-          <button
-            key={page}
-            type="button"
-            onClick={() => onPageChange(page)}
-            className={`join-item btn btn-sm min-w-9 cursor-pointer ${
-              page === currentPage
-                ? "bg-base-content text-base-100 hover:bg-base-content"
-                : "btn-ghost"
-            }`}
-          >
-            {page}
-          </button>
-        )
-      )}
+      {/* Desktop: show all page numbers. Mobile: just current/total */}
+      <div className="hidden sm:flex items-center gap-1">
+        {pages.map((page, i) =>
+          page === "..." ? (
+            <span
+              key={`ellipsis-${i}`}
+              className="px-2 text-sm text-secondary select-none"
+            >
+              &hellip;
+            </span>
+          ) : (
+            <button
+              key={page}
+              type="button"
+              onClick={() => onPageChange(page)}
+              className={`join-item btn btn-sm min-w-9 cursor-pointer ${
+                page === currentPage
+                  ? "bg-base-content text-base-100 hover:bg-base-content"
+                  : "btn-ghost"
+              }`}
+            >
+              {page}
+            </button>
+          )
+        )}
+      </div>
+      <span className="sm:hidden text-sm text-secondary px-3">
+        {currentPage} / {totalPages}
+      </span>
 
       <button
         type="button"
         onClick={() => onPageChange(currentPage + 1)}
         disabled={currentPage >= totalPages}
-        className="join-item btn btn-sm btn-ghost disabled:opacity-30 cursor-pointer"
+        className="join-item btn btn-sm btn-ghost disabled:opacity-30 cursor-pointer min-w-10 min-h-10"
         aria-label="Next page"
       >
         <svg

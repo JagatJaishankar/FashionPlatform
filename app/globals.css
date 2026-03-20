@@ -48,6 +48,7 @@
 @theme {
   --font-display: "cormorant", ui-serif, serif;
   --font-body: "manrope", ui-sans-serif, sans-serif;
+  --animate-heart-breathe: heart-breathe 2s ease-in-out infinite;
 }
 
 html {
@@ -101,4 +102,56 @@ html {
 
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
+}
+
+/* ── Wishlist Heart ── */
+
+.wishlist-heart {
+  color: oklch(21% 0.0083 84.6 / 0.45);
+}
+
+.wishlist-heart:hover {
+  color: oklch(54.3% 0.174 29.7);
+}
+
+/* Mobile: heart path always fully drawn, no animation */
+.heart-path {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 0;
+  transition: fill 0.3s ease;
+}
+
+/* Desktop: stroke starts hidden, draws in on card hover */
+@media (width >= 768px) {
+  .group .wishlist-heart .heart-path {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+  }
+
+  .group:hover .wishlist-heart .heart-path {
+    animation: heart-draw 0.5s cubic-bezier(0.22, 0.61, 0.36, 1) 0.1s forwards;
+  }
+}
+
+/* Direct hover: warm red fill replaces white */
+.wishlist-heart:hover .heart-path {
+  fill: oklch(54.3% 0.174 29.7 / 0.12);
+}
+
+@keyframes heart-breathe {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.06);
+  }
+}
+
+@keyframes heart-draw {
+  from {
+    stroke-dashoffset: 1;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
 }

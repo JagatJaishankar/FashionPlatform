@@ -1,10 +1,9 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { formatPrice, getDiscountPercentage } from "@/lib/utils";
-import { useWishlist } from "@/lib/wishlist-context";
 import { useQuickView } from "@/lib/quickview-context";
 
 export default function ProductCard({
@@ -23,25 +22,17 @@ export default function ProductCard({
   categorySlug,
   className = "",
 }) {
-  const { isInWishlist, addToWishlist, removeFromWishlist } = useWishlist();
   const { openQuickView } = useQuickView();
-  const [heartScale, setHeartScale] = useState(false);
+  const router = useRouter();
 
   const hasSale = tags.includes("sale") && originalPrice;
   const hasTrending = tags.includes("trending");
   const discount = hasSale ? getDiscountPercentage(price, originalPrice) : 0;
-  const wishlisted = isInWishlist(id);
 
   function handleWishlistClick(e) {
     e.preventDefault();
     e.stopPropagation();
-    setHeartScale(true);
-    setTimeout(() => setHeartScale(false), 200);
-    if (wishlisted) {
-      removeFromWishlist(id);
-    } else {
-      addToWishlist(id);
-    }
+    router.push("/login");
   }
 
   function handleQuickView(e) {
@@ -94,24 +85,22 @@ export default function ProductCard({
         <button
           type="button"
           onClick={handleWishlistClick}
-          className={`absolute top-3 right-3 w-8 h-8 flex items-center justify-center cursor-pointer transition-all duration-200 ${
-            wishlisted
-              ? "bg-base-100/80 backdrop-blur-sm text-error opacity-100"
-              : "bg-base-100/80 backdrop-blur-sm text-base-content/50 opacity-100 md:opacity-0 md:group-hover:opacity-100 hover:text-base-content"
-          } ${heartScale ? "scale-125" : "scale-100"}`}
-          aria-label={wishlisted ? "Remove from wishlist" : "Add to wishlist"}
+          className="wishlist-heart absolute top-3 right-3 w-9 h-9 flex items-center justify-center cursor-pointer transition-all duration-300 ease-out opacity-100 md:opacity-0 md:group-hover:opacity-100 group-hover:animate-heart-breathe"
+          aria-label="Save to wishlist"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24"
-            className="w-[18px] h-[18px]"
-            fill={wishlisted ? "currentColor" : "none"}
+            className="w-[18px] h-[18px] heart-icon"
+            fill="none"
             stroke="currentColor"
-            strokeWidth={wishlisted ? 0 : 1.5}
+            strokeWidth={1.5}
           >
             <path
+              className="heart-path"
               strokeLinecap="round"
               strokeLinejoin="round"
+              pathLength="1"
               d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z"
             />
           </svg>
@@ -121,7 +110,7 @@ export default function ProductCard({
         <button
           type="button"
           onClick={handleQuickView}
-          className="md:hidden absolute top-13 right-3 w-8 h-8 flex items-center justify-center bg-base-100/80 backdrop-blur-sm text-base-content/50 cursor-pointer"
+          className="md:hidden absolute top-13 right-3 w-8 h-8 flex items-center justify-center bg-base-100 shadow-sm text-base-content/50 cursor-pointer"
           aria-label="Quick view"
         >
           <svg

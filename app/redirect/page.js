@@ -1,8 +1,7 @@
 "use client";
 
-import { Suspense, useEffect } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import Link from "next/link";
 
 export default function RedirectPage() {
   return (
@@ -16,41 +15,69 @@ function RedirectContent() {
   const searchParams = useSearchParams();
   const url = searchParams.get("url") || "";
   const brand = searchParams.get("brand") || "the store";
+  const [progress, setProgress] = useState(0);
 
   useEffect(() => {
+    // Animate progress bar
+    const start = Date.now();
+    const duration = 2500;
+    function tick() {
+      const elapsed = Date.now() - start;
+      const pct = Math.min(elapsed / duration, 1);
+      setProgress(pct * 100);
+      if (pct < 1) {
+        requestAnimationFrame(tick);
+      }
+    }
+    requestAnimationFrame(tick);
+
+    // Redirect after 2.5s
     if (url) {
       const timer = setTimeout(() => {
         window.location.href = url;
-      }, 2000);
+      }, 2500);
       return () => clearTimeout(timer);
     }
   }, [url]);
 
   return (
-    <main className="min-h-[60vh] flex flex-col items-center justify-center px-4 text-center">
-      <Link href="/" className="font-display text-2xl text-base-content mb-8">
-        TrendHub
-      </Link>
+    <div className="min-h-screen flex items-center justify-center bg-base-100 px-4">
+      <div className="max-w-sm w-full text-center">
+        {/* Logo */}
+        <p className="font-display text-2xl text-base-content mb-8">
+          TrendHub
+        </p>
 
-      <span className="loading loading-dots loading-lg text-primary mb-6" />
+        {/* Progress bar */}
+        <div className="w-full h-0.5 bg-base-300 overflow-hidden mb-8">
+          <div
+            className="h-full bg-primary transition-none"
+            style={{ width: `${progress}%` }}
+          />
+        </div>
 
-      <h1 className="text-xl font-display text-base-content">
-        Taking you to {brand}...
-      </h1>
-      <p className="text-sm text-secondary mt-2 max-w-sm">
-        You are being redirected to an external site. TrendHub may earn a
-        commission from your purchase.
-      </p>
+        {/* Message */}
+        <p className="text-sm text-secondary">Taking you to</p>
+        <p className="text-xl font-display text-base-content mt-1">{brand}</p>
 
-      {url && (
-        <a
-          href={url}
-          rel="noopener noreferrer"
-          className="text-[11px] tracking-[0.15em] uppercase text-secondary hover:text-base-content transition-colors mt-6 font-body"
-        >
-          If you&apos;re not redirected automatically, click here &rarr;
-        </a>
-      )}
-    </main>
+        {/* Animated dots */}
+        <div className="flex items-center justify-center gap-1.5 mt-4">
+          <span className="w-1.5 h-1.5 rounded-full bg-secondary/40 animate-pulse" style={{ animationDelay: "0ms" }} />
+          <span className="w-1.5 h-1.5 rounded-full bg-secondary/40 animate-pulse" style={{ animationDelay: "300ms" }} />
+          <span className="w-1.5 h-1.5 rounded-full bg-secondary/40 animate-pulse" style={{ animationDelay: "600ms" }} />
+        </div>
+
+        {/* Fallback link */}
+        {url && (
+          <a
+            href={url}
+            rel="noopener noreferrer"
+            className="text-xs text-secondary hover:text-primary transition-colors mt-8 inline-block font-body"
+          >
+            If you&apos;re not redirected, click here &rarr;
+          </a>
+        )}
+      </div>
+    </div>
   );
 }

@@ -2,10 +2,6 @@ import { Cormorant, Manrope } from "next/font/google";
 import "./globals.css";
 import { WishlistProvider } from "@/lib/wishlist-context";
 import { QuickViewProvider } from "@/lib/quickview-context";
-import AnnouncementBar from "@/components/layout/AnnouncementBar";
-import Navbar from "@/components/layout/Navbar";
-import Footer from "@/components/layout/Footer";
-import QuickViewModal from "@/components/ui/QuickViewModal";
 
 const cormorant = Cormorant({
   subsets: ["latin"],
@@ -53,11 +49,7 @@ export default function RootLayout({ children }) {
       <body className="bg-base-100 text-base-content font-body antialiased">
         <WishlistProvider>
           <QuickViewProvider>
-            <AnnouncementBar />
-            <Navbar />
             {children}
-            <Footer />
-            <QuickViewModal />
           </QuickViewProvider>
         </WishlistProvider>
       </body>

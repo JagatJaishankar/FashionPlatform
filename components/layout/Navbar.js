@@ -4,7 +4,6 @@ import { useState, useRef } from "react";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import { Suspense } from "react";
-import { useWishlist } from "@/lib/wishlist-context";
 import MobileDrawer from "./MobileDrawer";
 import SearchOverlay from "./SearchOverlay";
 
@@ -46,7 +45,6 @@ function NavbarShell() {
 function NavbarContent() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const { wishlistCount } = useWishlist();
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [womenOpen, setWomenOpen] = useState(false);
@@ -80,11 +78,11 @@ function NavbarContent() {
       <header className="sticky top-0 z-50 bg-base-100 border-b border-base-300">
         <nav className="relative max-w-[1520px] mx-auto px-4 md:px-6 lg:px-8 flex items-center justify-between h-14">
           {/* Left: hamburger (mobile) + logo */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
             <button
               type="button"
               onClick={() => setDrawerOpen(true)}
-              className="lg:hidden text-base-content cursor-pointer"
+              className="lg:hidden text-base-content cursor-pointer w-10 h-10 flex items-center justify-center -ml-2"
               aria-label="Open menu"
             >
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
@@ -156,12 +154,12 @@ function NavbarContent() {
           </div>
 
           {/* Right side */}
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-1 lg:gap-3">
             {/* Desktop search trigger */}
             <button
               type="button"
               onClick={() => setSearchOpen(true)}
-              className="hidden lg:flex items-center gap-2 text-secondary hover:text-base-content transition-colors cursor-pointer border-b border-base-300 pb-1"
+              className="hidden lg:flex items-center gap-2 text-secondary hover:text-base-content transition-colors cursor-pointer border-b border-base-300 pb-1 mr-4"
               aria-label="Open search"
             >
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-3.5 h-3.5">
@@ -173,17 +171,12 @@ function NavbarContent() {
             {/* Wishlist icon */}
             <Link
               href="/wishlist"
-              className="relative text-base-content hover:text-primary transition-colors"
+              className="relative text-base-content hover:text-primary transition-colors w-10 h-10 flex items-center justify-center"
               aria-label="Wishlist"
             >
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
               </svg>
-              {wishlistCount > 0 && (
-                <span className="absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full bg-primary text-primary-content text-[10px] flex items-center justify-center font-semibold">
-                  {wishlistCount}
-                </span>
-              )}
             </Link>
 
             {/* Account icon — desktop only */}
@@ -209,23 +202,11 @@ function NavbarContent() {
             <button
               type="button"
               onClick={() => setSearchOpen(true)}
-              className="lg:hidden text-base-content cursor-pointer"
+              className="lg:hidden text-base-content cursor-pointer w-10 h-10 flex items-center justify-center -mr-2"
               aria-label="Open search"
             >
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5">
                 <path fillRule="evenodd" d="M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z" clipRule="evenodd" />
-              </svg>
-            </button>
-
-            {/* Mobile hamburger */}
-            <button
-              type="button"
-              onClick={() => setDrawerOpen(true)}
-              className="lg:hidden text-base-content cursor-pointer hidden"
-              aria-label="Open menu"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
               </svg>
             </button>
           </div>

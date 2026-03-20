@@ -103,7 +103,7 @@ export default function SearchOverlay({ isOpen, onClose }) {
       <div className="hidden lg:block fixed inset-0 z-40">
         <div className="absolute inset-0 bg-neutral/30 backdrop-blur-sm" onClick={onClose} />
         <div className="absolute top-[calc(3.5rem+1px)] left-0 right-0 bg-base-100 border-b border-base-300 shadow-lg">
-          <div className="max-w-[1520px] mx-auto px-12 py-8">
+          <div className="max-w-[1520px] mx-auto px-12 pt-12 pb-8">
             {/* Close button */}
             <button
               type="button"
@@ -117,7 +117,7 @@ export default function SearchOverlay({ isOpen, onClose }) {
             </button>
 
             {/* Search input — large, bottom-border style */}
-            <div className="border-b-2 border-base-300 focus-within:border-base-content transition-colors">
+            <div className="border-b-2 border-base-300">
               <input
                 ref={inputRef}
                 type="text"

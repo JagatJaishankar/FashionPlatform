@@ -30,10 +30,13 @@ export default function SearchOverlay({ isOpen, onClose }) {
 
   useEffect(() => {
     if (isOpen) {
-      document.body.classList.add("overflow-hidden");
+      const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
+      document.body.style.overflow = "hidden";
+      document.body.style.paddingRight = `${scrollbarWidth}px`;
     }
     return () => {
-      document.body.classList.remove("overflow-hidden");
+      document.body.style.overflow = "";
+      document.body.style.paddingRight = "";
     };
   }, [isOpen]);
 

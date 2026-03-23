@@ -70,21 +70,56 @@ function getVisibleCount() {
   return 3;
 }
 
+function buildGroupPositions(totalSlides, vc) {
+  const positions = [];
+  for (let i = 0; i < totalSlides; i += vc) {
+    if (i + vc > totalSlides) {
+      positions.push(totalSlides - vc);
+      break;
+    }
+    positions.push(i);
+  }
+  return positions;
+}
+
 export default function BannerCarousel() {
   const [visibleCount, setVisibleCount] = useState(3);
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [isTransitioning, setIsTransitioning] = useState(false);
+  const [groupIndex, setGroupIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
+  const [shouldAnimate, setShouldAnimate] = useState(true);
+  const [isLocked, setIsLocked] = useState(false);
   const trackRef = useRef(null);
   const intervalRef = useRef(null);
 
+  const vc = visibleCount;
   const totalSlides = banners.length;
-  const totalGroups = Math.ceil(totalSlides / visibleCount);
+  const groupPositions = buildGroupPositions(totalSlides, vc);
+  const totalGroups = groupPositions.length;
+
+  // Extended slides: [last vc clones] + [all banners] + [first vc clones]
+  const prefixClones = banners.slice(-vc);
+  const suffixClones = banners.slice(0, vc);
+  const extendedSlides = [...prefixClones, ...banners, ...suffixClones];
+
+  // Current position in extended index space
+  // Real slides start at index vc in extended array
+  // groupPositions[groupIndex] = real slide index of left edge
+  // Extended position = vc + groupPositions[groupIndex]
+  const realPos = groupPositions[groupIndex] ?? 0;
+  const extendedPos = vc + realPos;
+
+  // For wrap states: we temporarily override the position
+  const [overridePos, setOverridePos] = useState(null);
+  const activePos = overridePos !== null ? overridePos : extendedPos;
+
+  const slideWidth = 100 / vc;
+  const offset = -(activePos * slideWidth);
 
   useEffect(() => {
     function handleResize() {
       setVisibleCount(getVisibleCount());
-      setCurrentIndex(0);
+      setGroupIndex(0);
+      setOverridePos(null);
     }
     setVisibleCount(getVisibleCount());
     window.addEventListener("resize", handleResize);
@@ -92,26 +127,90 @@ export default function BannerCarousel() {
   }, []);
 
   const goToGroup = useCallback(
-    (index) => {
-      if (isTransitioning) return;
-      setIsTransitioning(true);
-      setCurrentIndex(index);
-      setTimeout(() => setIsTransitioning(false), 500);
+    (newIndex) => {
+      if (isLocked) return;
+      setIsLocked(true);
+      setShouldAnimate(true);
+      setOverridePos(null);
+      setGroupIndex(newIndex);
+      setTimeout(() => setIsLocked(false), 520);
     },
-    [isTransitioning]
+    [isLocked]
   );
 
   const nextGroup = useCallback(() => {
-    goToGroup(currentIndex >= totalGroups - 1 ? 0 : currentIndex + 1);
-  }, [currentIndex, totalGroups, goToGroup]);
+    if (isLocked) return;
+    if (groupIndex >= totalGroups - 1) {
+      // Wrap forward: animate to suffix clone, then snap back
+      setIsLocked(true);
+      setShouldAnimate(true);
+      setOverridePos(vc + totalSlides); // suffix clone position
+      setTimeout(() => {
+        setShouldAnimate(false);
+        setOverridePos(null);
+        setGroupIndex(0);
+        requestAnimationFrame(() => {
+          setShouldAnimate(true);
+          setIsLocked(false);
+        });
+      }, 520);
+    } else {
+      goToGroup(groupIndex + 1);
+    }
+  }, [groupIndex, totalGroups, vc, totalSlides, goToGroup, isLocked]);
 
+  const prevGroup = useCallback(() => {
+    if (isLocked) return;
+    if (groupIndex <= 0) {
+      // Wrap backward: animate to prefix clone, then snap back
+      setIsLocked(true);
+      setShouldAnimate(true);
+      setOverridePos(0); // prefix clone position
+      setTimeout(() => {
+        setShouldAnimate(false);
+        setOverridePos(null);
+        setGroupIndex(totalGroups - 1);
+        requestAnimationFrame(() => {
+          setShouldAnimate(true);
+          setIsLocked(false);
+        });
+      }, 520);
+    } else {
+      goToGroup(groupIndex - 1);
+    }
+  }, [groupIndex, totalGroups, goToGroup, isLocked]);
+
+  // Auto-scroll
   useEffect(() => {
-    if (isPaused) return;
+    if (isPaused) {
+      clearInterval(intervalRef.current);
+      return;
+    }
     intervalRef.current = setInterval(nextGroup, 4000);
     return () => clearInterval(intervalRef.current);
   }, [isPaused, nextGroup]);
 
-  const offset = -(currentIndex * 100);
+  function resetAutoScroll() {
+    clearInterval(intervalRef.current);
+    if (!isPaused) {
+      intervalRef.current = setInterval(nextGroup, 4000);
+    }
+  }
+
+  function handlePrev() {
+    prevGroup();
+    resetAutoScroll();
+  }
+
+  function handleNext() {
+    nextGroup();
+    resetAutoScroll();
+  }
+
+  // Dot indicator: real group index
+  let dotIndex = groupIndex;
+  if (overridePos === vc + totalSlides) dotIndex = 0;
+  if (overridePos === 0) dotIndex = totalGroups - 1;
 
   return (
     <section className="pt-6 md:pt-8">
@@ -126,16 +225,14 @@ export default function BannerCarousel() {
           {/* Track */}
           <div
             ref={trackRef}
-            className="flex transition-transform duration-500 ease-in-out"
-            style={{
-              transform: `translateX(${offset}%)`,
-            }}
+            className={`flex ${shouldAnimate ? "transition-transform duration-500 ease-in-out" : ""}`}
+            style={{ transform: `translateX(${offset}%)` }}
           >
-            {banners.map((banner, i) => (
+            {extendedSlides.map((banner, i) => (
               <div
                 key={i}
                 className="shrink-0 px-2"
-                style={{ width: `${100 / visibleCount}%` }}
+                style={{ width: `${slideWidth}%` }}
               >
                 <Link href={banner.link} className="block relative aspect-[2.3/1] overflow-hidden group">
                   <Image
@@ -145,9 +242,7 @@ export default function BannerCarousel() {
                     sizes={`(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw`}
                     className="object-cover transition-transform duration-700 group-hover:scale-105"
                   />
-                  {/* Gradient overlay */}
                   <div className="absolute inset-0 bg-gradient-to-r from-neutral/60 via-neutral/25 to-transparent" />
-                  {/* Text overlay */}
                   <div className="absolute inset-0 flex flex-col justify-center px-4 md:px-6">
                     <span className="text-[10px] tracking-[0.2em] uppercase text-neutral-content/70 font-body">
                       {banner.eyebrow}
@@ -167,10 +262,9 @@ export default function BannerCarousel() {
           {/* Arrow buttons — desktop only */}
           <button
             type="button"
-            onClick={() => goToGroup(currentIndex <= 0 ? totalGroups - 1 : currentIndex - 1)}
-            className="hidden lg:flex absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 items-center justify-center bg-base-100/80 backdrop-blur-sm text-base-content hover:bg-base-100 transition-colors cursor-pointer opacity-0 group-hover:opacity-100"
+            onClick={handlePrev}
+            className="hidden lg:flex absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 items-center justify-center bg-base-100/80 backdrop-blur-sm text-base-content hover:bg-base-100 transition-colors cursor-pointer"
             aria-label="Previous"
-            style={{ opacity: 1 }}
           >
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
               <path fillRule="evenodd" d="M11.78 5.22a.75.75 0 010 1.06L8.06 10l3.72 3.72a.75.75 0 11-1.06 1.06l-4.25-4.25a.75.75 0 010-1.06l4.25-4.25a.75.75 0 011.06 0z" clipRule="evenodd" />
@@ -178,10 +272,9 @@ export default function BannerCarousel() {
           </button>
           <button
             type="button"
-            onClick={() => goToGroup(currentIndex >= totalGroups - 1 ? 0 : currentIndex + 1)}
-            className="hidden lg:flex absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 items-center justify-center bg-base-100/80 backdrop-blur-sm text-base-content hover:bg-base-100 transition-colors cursor-pointer opacity-0 group-hover:opacity-100"
+            onClick={handleNext}
+            className="hidden lg:flex absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 items-center justify-center bg-base-100/80 backdrop-blur-sm text-base-content hover:bg-base-100 transition-colors cursor-pointer"
             aria-label="Next"
-            style={{ opacity: 1 }}
           >
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
               <path fillRule="evenodd" d="M8.22 5.22a.75.75 0 011.06 0l4.25 4.25a.75.75 0 010 1.06l-4.25 4.25a.75.75 0 01-1.06-1.06L11.94 10 8.22 6.28a.75.75 0 010-1.06z" clipRule="evenodd" />
@@ -195,9 +288,12 @@ export default function BannerCarousel() {
             <button
               key={i}
               type="button"
-              onClick={() => goToGroup(i)}
+              onClick={() => {
+                goToGroup(i);
+                resetAutoScroll();
+              }}
               className={`w-2 h-2 rounded-full transition-colors cursor-pointer ${
-                i === currentIndex ? "bg-base-content" : "bg-base-300"
+                i === dotIndex ? "bg-base-content" : "bg-base-300"
               }`}
               aria-label={`Go to slide group ${i + 1}`}
             />

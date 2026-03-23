@@ -81,40 +81,11 @@ export default function ProductCard({
           </div>
         )}
 
-        {/* Wishlist heart — top right */}
-        <button
-          type="button"
-          onClick={handleWishlistClick}
-          className="wishlist-btn absolute top-3 right-3 w-9 h-9 flex items-center justify-center rounded-full bg-base-100/90 backdrop-blur-sm border border-base-300/60 shadow-sm hover:shadow-md text-base-content/70 cursor-pointer transition-shadow duration-300"
-          aria-label="Save to wishlist"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            className="w-[17px] h-[17px] heart-svg"
-          >
-            <path
-              className="heart-fill"
-              d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z"
-            />
-            <path
-              className="heart-stroke"
-              d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth={1.5}
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              pathLength="1"
-            />
-          </svg>
-        </button>
-
-        {/* Quick View eye icon — mobile only, below heart */}
+        {/* Quick View eye icon — mobile only */}
         <button
           type="button"
           onClick={handleQuickView}
-          className="md:hidden absolute top-13 right-3 w-8 h-8 flex items-center justify-center bg-base-100 shadow-sm text-base-content/50 cursor-pointer"
+          className="md:hidden absolute top-3 right-3 w-8 h-8 flex items-center justify-center bg-base-100 shadow-sm text-base-content/50 cursor-pointer"
           aria-label="Quick view"
         >
           <svg
@@ -139,26 +110,51 @@ export default function ProductCard({
           Quick View
         </button>
       </div>
-      <p className="text-[11px] tracking-[0.15em] uppercase text-secondary mt-3 font-body">
-        {brand}
-      </p>
-      <p className="text-sm font-medium text-base-content mt-0.5 line-clamp-1 font-body group-hover:underline">
-        {name}
-      </p>
-      <div className="flex items-center gap-2 mt-1">
-        <span className="text-sm font-semibold text-base-content">
-          {formatPrice(price)}
-        </span>
-        {hasSale && (
-          <>
-            <span className="text-xs text-secondary line-through">
-              {formatPrice(originalPrice)}
+      <div className="flex items-center gap-2 mt-3">
+        <div className="min-w-0 flex-1">
+          <p className="text-[11px] tracking-[0.15em] uppercase text-secondary font-body">
+            {brand}
+          </p>
+          <p className="text-sm font-medium text-base-content mt-0.5 line-clamp-1 font-body group-hover:underline">
+            {name}
+          </p>
+          <div className="flex items-center gap-2 mt-1">
+            <span className="text-sm font-semibold text-base-content">
+              {formatPrice(price)}
             </span>
-            <span className="text-xs text-error font-medium">
-              -{discount}%
-            </span>
-          </>
-        )}
+            {hasSale && (
+              <>
+                <span className="text-xs text-secondary line-through">
+                  {formatPrice(originalPrice)}
+                </span>
+                <span className="text-xs text-error font-medium">
+                  -{discount}%
+                </span>
+              </>
+            )}
+          </div>
+        </div>
+        <button
+          type="button"
+          onClick={handleWishlistClick}
+          className="group/heart shrink-0 text-base-content/30 hover:text-error hover:scale-110 transition-all duration-200 cursor-pointer"
+          aria-label="Save to wishlist"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth={1.5}
+            className="w-[27px] h-[27px]"
+          >
+            <path
+              className="fill-transparent group-hover/heart:fill-error/20 transition-colors duration-200"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z"
+            />
+          </svg>
+        </button>
       </div>
     </Link>
   );

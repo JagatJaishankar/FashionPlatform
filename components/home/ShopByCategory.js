@@ -3,7 +3,7 @@ import CategoryCard from "@/components/ui/CategoryCard";
 
 export default function ShopByCategory({ categories }) {
   return (
-    <section className="py-10 md:py-14">
+    <section className="py-8 md:py-12">
       <div className="max-w-[1520px] mx-auto px-4 md:px-6 lg:px-8">
         <SectionHeader
           eyebrow="SHOP BY"

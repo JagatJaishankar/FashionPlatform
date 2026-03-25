@@ -23,8 +23,8 @@
   --color-neutral: oklch(22.2% 0.0041 84.6);
   --color-neutral-content: oklch(98% 0.0044 78.2);
 
-  --color-info: oklch(74.1% 0.012 71.8);
-  --color-info-content: oklch(21% 0.0083 84.6);
+  --color-info: oklch(55% 0.15 250);
+  --color-info-content: oklch(98% 0.0044 78.2);
   --color-success: oklch(54.1% 0.0773 152.7);
   --color-success-content: oklch(98% 0.0044 78.2);
   --color-warning: oklch(75% 0.0854 82.1);
@@ -91,6 +91,29 @@ html {
 *:focus-visible {
   outline: 2px solid oklch(75% 0.0854 82.1);
   outline-offset: 2px;
+}
+
+/* Coupon card scalloped divider */
+.coupon-tear {
+  position: relative;
+}
+
+.coupon-tear::before {
+  content: "";
+  position: absolute;
+  top: -6px;
+  left: 0;
+  right: 0;
+  height: 6px;
+  background: radial-gradient(
+    circle at 8px -2px,
+    oklch(98% 0.0044 78.2) 6px,
+    oklch(93.7% 0.0069 88.7) 6px,
+    oklch(93.7% 0.0069 88.7) 6.5px,
+    transparent 6.5px
+  );
+  background-size: 16px 6px;
+  background-repeat: repeat-x;
 }
 
 /* Hide scrollbar on filter pills */

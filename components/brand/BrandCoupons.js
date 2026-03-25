@@ -1,17 +1,38 @@
-import SectionHeader from "@/components/ui/SectionHeader";
-import CouponCard from "@/components/ui/CouponCard";
+"use client";
+
+import { useState } from "react";
+import CouponRow from "@/components/ui/CouponRow";
+import CouponModal from "@/components/ui/CouponModal";
 
 export default function BrandCoupons({ brand, coupons }) {
+  const [activeCoupon, setActiveCoupon] = useState(null);
+
   if (!coupons || coupons.length === 0) return null;
 
   return (
-    <section className="py-10 md:py-14 border-t border-base-300">
-      <SectionHeader heading={`${brand} Coupon Codes`} />
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {coupons.map((coupon) => (
-          <CouponCard key={coupon.id} {...coupon} />
-        ))}
-      </div>
-    </section>
+    <>
+      <section className="py-6 md:py-8">
+        <h2 className="text-xl font-display mb-4">{brand} Offers</h2>
+        <p className="text-xs text-secondary mb-4">
+          {coupons.length} verified offers
+        </p>
+        <div className="border border-base-300 divide-y divide-base-300">
+          {coupons.map((coupon) => (
+            <CouponRow
+              key={coupon.id}
+              coupon={coupon}
+              onClick={() => setActiveCoupon(coupon)}
+            />
+          ))}
+        </div>
+      </section>
+
+      <CouponModal
+        coupon={activeCoupon}
+        isOpen={!!activeCoupon}
+        onClose={() => setActiveCoupon(null)}
+        showBrand={false}
+      />
+    </>
   );
 }

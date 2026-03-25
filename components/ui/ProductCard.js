@@ -2,9 +2,10 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
-import { formatPrice, getDiscountPercentage } from "@/lib/utils";
+import { getDiscountPercentage } from "@/lib/utils";
 import { useQuickView } from "@/lib/quickview-context";
+import { useAuthModal } from "@/lib/auth-modal-context";
+import { useCurrency } from "@/lib/currency-context";
 
 export default function ProductCard({
   id,
@@ -23,7 +24,8 @@ export default function ProductCard({
   className = "",
 }) {
   const { openQuickView } = useQuickView();
-  const router = useRouter();
+  const { openAuthModal } = useAuthModal();
+  const { formatPrice } = useCurrency();
 
   const hasSale = tags.includes("sale") && originalPrice;
   const hasTrending = tags.includes("trending");
@@ -32,7 +34,7 @@ export default function ProductCard({
   function handleWishlistClick(e) {
     e.preventDefault();
     e.stopPropagation();
-    router.push("/login");
+    openAuthModal();
   }
 
   function handleQuickView(e) {
@@ -110,51 +112,63 @@ export default function ProductCard({
           Quick View
         </button>
       </div>
-      <div className="flex items-center gap-2 mt-3">
-        <div className="min-w-0 flex-1">
-          <p className="text-[11px] tracking-[0.15em] uppercase text-secondary font-body">
-            {brand}
-          </p>
-          <p className="text-sm font-medium text-base-content mt-0.5 line-clamp-1 font-body group-hover:underline">
-            {name}
-          </p>
-          <div className="flex items-center gap-2 mt-1">
+
+      {/* Info section: Price + Heart | Brand | Name | Merchant */}
+      <div className="mt-2.5">
+        {/* Row 1: Price left, Heart right */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center">
             <span className="text-sm font-semibold text-base-content">
               {formatPrice(price)}
             </span>
             {hasSale && (
               <>
-                <span className="text-xs text-secondary line-through">
+                <span className="text-xs text-secondary line-through ml-1.5">
                   {formatPrice(originalPrice)}
                 </span>
-                <span className="text-xs text-error font-medium">
+                <span className="text-xs text-error ml-1.5">
                   -{discount}%
                 </span>
               </>
             )}
           </div>
-        </div>
-        <button
-          type="button"
-          onClick={handleWishlistClick}
-          className="group/heart shrink-0 text-base-content/30 hover:text-error hover:scale-110 transition-all duration-200 cursor-pointer"
-          aria-label="Save to wishlist"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            strokeWidth={1.5}
-            className="w-[27px] h-[27px]"
+          <button
+            type="button"
+            onClick={handleWishlistClick}
+            className="group/heart shrink-0 text-base-content hover:text-error transition-colors cursor-pointer"
+            aria-label="Save to wishlist"
           >
-            <path
-              className="fill-transparent group-hover/heart:fill-error/20 transition-colors duration-200"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z"
-            />
-          </svg>
-        </button>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+              className="w-4 h-4"
+            >
+              <path d="M11.645 20.91l-.007-.003-.022-.012a15.247 15.247 0 01-.383-.218 25.18 25.18 0 01-4.244-3.17C4.688 15.36 2.25 12.174 2.25 8.25 2.25 5.322 4.714 3 7.688 3A5.5 5.5 0 0112 5.052 5.5 5.5 0 0116.313 3c2.973 0 5.437 2.322 5.437 5.25 0 3.925-2.438 7.111-4.739 9.256a25.175 25.175 0 01-4.244 3.17 15.247 15.247 0 01-.383.219l-.022.012-.007.004-.003.001a.752.752 0 01-.704 0l-.003-.001z" />
+            </svg>
+          </button>
+        </div>
+
+        {/* Row 2: Brand */}
+        <p className="text-[11px] tracking-[0.15em] uppercase text-secondary font-body mt-1">
+          {brand}
+        </p>
+
+        {/* Row 3: Product name */}
+        <p className="text-sm font-medium text-base-content mt-0.5 line-clamp-1 font-body group-hover:underline">
+          {name}
+        </p>
+
+        {/* Row 4: Merchant line */}
+        {merchant && (
+          <p className="text-[11px] text-secondary mt-1 flex items-center gap-0.5">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" className="w-2 h-2 text-secondary/50 shrink-0">
+              <path d="M6.22 8.72a.75.75 0 001.06 1.06l5.22-5.22v1.69a.75.75 0 001.5 0v-3.5a.75.75 0 00-.75-.75h-3.5a.75.75 0 000 1.5h1.69L6.22 8.72z" />
+              <path d="M3.5 6.75c0-.69.56-1.25 1.25-1.25H7A.75.75 0 007 4H4.75A2.75 2.75 0 002 6.75v4.5A2.75 2.75 0 004.75 14h4.5A2.75 2.75 0 0012 11.25V9a.75.75 0 00-1.5 0v2.25c0 .69-.56 1.25-1.25 1.25h-4.5c-.69 0-1.25-.56-1.25-1.25v-4.5z" />
+            </svg>
+            From <span className="font-medium ml-0.5">{merchant}</span>
+          </p>
+        )}
       </div>
     </Link>
   );

@@ -111,7 +111,7 @@ function SearchContent() {
                 coupons.length > 0 ? (
                   <CouponGrid
                     coupons={coupons}
-                    onClaim={(coupon) => setActiveCoupon(coupon)}
+                    onSelect={(coupon) => setActiveCoupon(coupon)}
                   />
                 ) : (
                   <EmptyState

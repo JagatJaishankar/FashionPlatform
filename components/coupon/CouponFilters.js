@@ -2,8 +2,9 @@
 
 const typeOptions = [
   { label: "All", value: "" },
-  { label: "Percentage Off", value: "percentage" },
-  { label: "Fixed Amount", value: "fixed" },
+  { label: "Sale", value: "sale" },
+  { label: "Coupon Code", value: "coupon-code" },
+  { label: "Cash Back", value: "cashback" },
   { label: "Free Shipping", value: "free-shipping" },
 ];
 

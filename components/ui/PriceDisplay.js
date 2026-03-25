@@ -1,4 +1,7 @@
-import { formatPrice, getDiscountPercentage } from "@/lib/utils";
+"use client";
+
+import { getDiscountPercentage } from "@/lib/utils";
+import { useCurrency } from "@/lib/currency-context";
 
 const sizes = {
   sm: { price: "text-sm font-semibold", original: "text-xs", discount: "text-xs" },
@@ -10,6 +13,7 @@ export default function PriceDisplay({
   originalPrice,
   size = "sm",
 }) {
+  const { formatPrice } = useCurrency();
   const s = sizes[size] || sizes.sm;
   const hasDiscount = originalPrice && originalPrice > price;
   const discount = hasDiscount ? getDiscountPercentage(price, originalPrice) : 0;

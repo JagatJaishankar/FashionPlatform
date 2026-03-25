@@ -35,7 +35,7 @@ export default function Home() {
   return (
     <main>
       <BannerCarousel />
-      <div className="mt-8 md:mt-12">
+      <div className="mt-6 md:mt-8">
         <TrendingProducts products={trendingProducts} />
       </div>
       <LatestCoupons coupons={latestCoupons} />

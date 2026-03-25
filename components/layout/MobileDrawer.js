@@ -3,12 +3,56 @@
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
+import CurrencySelector from "./CurrencySelector";
 
-const subcategories = [
-  { name: "Clothing", slug: "clothing" },
-  { name: "Shoes", slug: "shoes" },
-  { name: "Bags", slug: "bags" },
-  { name: "Jewellery", slug: "jewellery" },
+const categories = [
+  {
+    name: "Clothing",
+    slug: "clothing",
+    subcategories: [
+      { name: "Dresses", slug: "dresses" },
+      { name: "Tops", slug: "tops" },
+      { name: "Coats & Jackets", slug: "coats-jackets" },
+      { name: "Knitwear", slug: "knitwear" },
+      { name: "Trousers", slug: "trousers" },
+      { name: "Skirts", slug: "skirts" },
+      { name: "Activewear", slug: "activewear" },
+    ],
+  },
+  {
+    name: "Shoes",
+    slug: "shoes",
+    subcategories: [
+      { name: "Heels", slug: "heels" },
+      { name: "Sneakers", slug: "sneakers" },
+      { name: "Boots", slug: "boots" },
+      { name: "Sandals", slug: "sandals" },
+      { name: "Flats", slug: "flats" },
+      { name: "Mules", slug: "mules" },
+    ],
+  },
+  {
+    name: "Bags",
+    slug: "bags",
+    subcategories: [
+      { name: "Tote Bags", slug: "tote-bags" },
+      { name: "Shoulder Bags", slug: "shoulder-bags" },
+      { name: "Crossbody Bags", slug: "crossbody-bags" },
+      { name: "Clutches", slug: "clutches" },
+      { name: "Backpacks", slug: "backpacks" },
+    ],
+  },
+  {
+    name: "Jewellery",
+    slug: "jewellery",
+    subcategories: [
+      { name: "Necklaces", slug: "necklaces" },
+      { name: "Earrings", slug: "earrings" },
+      { name: "Bracelets", slug: "bracelets" },
+      { name: "Rings", slug: "rings" },
+      { name: "Watches", slug: "watches" },
+    ],
+  },
 ];
 
 const navLinks = [
@@ -20,20 +64,20 @@ const navLinks = [
 export default function MobileDrawer({ isOpen, onClose }) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const [womenExpanded, setWomenExpanded] = useState(false);
+  const [expandedCategory, setExpandedCategory] = useState(null);
 
   const currentCategory = searchParams.get("category") || "";
 
-  function isWomenActive() {
-    return pathname === "/products" || pathname.startsWith("/products/");
+  function isCategoryActive(slug) {
+    return pathname === "/products" && currentCategory === slug;
   }
 
   function isLinkActive(match) {
     return pathname === match || pathname.startsWith(match + "/");
   }
 
-  function isCategoryActive(slug) {
-    return pathname === "/products" && currentCategory === slug;
+  function toggleCategory(slug) {
+    setExpandedCategory(expandedCategory === slug ? null : slug);
   }
 
   const handleEscape = useCallback(
@@ -89,61 +133,66 @@ export default function MobileDrawer({ isOpen, onClose }) {
 
         {/* Nav links */}
         <nav className="flex-1 px-4 pt-2">
-          {/* Women — expandable */}
-          <div className="border-b border-base-300">
-            <button
-              type="button"
-              onClick={() => setWomenExpanded(!womenExpanded)}
-              className="flex items-center justify-between w-full py-3 cursor-pointer"
-            >
-              <span
-                className={`text-lg font-display ${
-                  isWomenActive()
-                    ? "text-base-content font-semibold"
-                    : "text-base-content"
-                }`}
+          {/* Categories — expandable */}
+          {categories.map((cat) => (
+            <div key={cat.slug} className="border-b border-base-300">
+              <button
+                type="button"
+                onClick={() => toggleCategory(cat.slug)}
+                className="flex items-center justify-between w-full py-3 cursor-pointer"
               >
-                Women
-              </span>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-                className={`w-4 h-4 text-secondary transition-transform duration-200 ${womenExpanded ? "rotate-180" : ""}`}
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M5.22 8.22a.75.75 0 011.06 0L10 11.94l3.72-3.72a.75.75 0 111.06 1.06l-4.25 4.25a.75.75 0 01-1.06 0L5.22 9.28a.75.75 0 010-1.06z"
-                  clipRule="evenodd"
-                />
-              </svg>
-            </button>
-            {womenExpanded && (
-              <div className="pb-3 pl-4 flex flex-col gap-1">
-                <Link
-                  href="/products"
-                  onClick={onClose}
-                  className="text-sm font-body font-medium text-secondary hover:text-base-content transition-colors py-1.5"
+                <span
+                  className={`text-lg font-display ${
+                    isCategoryActive(cat.slug)
+                      ? "text-base-content font-semibold"
+                      : "text-base-content"
+                  }`}
                 >
-                  Shop All
-                </Link>
-                {subcategories.map((cat) => (
+                  {cat.name}
+                </span>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                  className={`w-4 h-4 text-secondary transition-transform duration-200 ${expandedCategory === cat.slug ? "rotate-180" : ""}`}
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M5.22 8.22a.75.75 0 011.06 0L10 11.94l3.72-3.72a.75.75 0 111.06 1.06l-4.25 4.25a.75.75 0 01-1.06 0L5.22 9.28a.75.75 0 010-1.06z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+              </button>
+              {expandedCategory === cat.slug && (
+                <div className="pb-3 pl-4 flex flex-col gap-1">
                   <Link
-                    key={cat.slug}
                     href={`/products?category=${cat.slug}`}
                     onClick={onClose}
-                    className={`text-sm font-body font-medium py-1.5 transition-colors ${
-                      isCategoryActive(cat.slug)
-                        ? "text-base-content font-semibold"
-                        : "text-secondary hover:text-base-content"
-                    }`}
+                    className="text-sm font-body font-medium text-secondary hover:text-base-content transition-colors py-1.5"
                   >
-                    {cat.name}
+                    Shop All {cat.name}
                   </Link>
-                ))}
-              </div>
-            )}
-          </div>
+                  <Link
+                    href={`/products?category=${cat.slug}&tag=sale`}
+                    onClick={onClose}
+                    className="text-sm font-body font-medium text-error py-1.5"
+                  >
+                    {cat.name} on Sale
+                  </Link>
+                  {cat.subcategories.map((sub) => (
+                    <Link
+                      key={sub.slug}
+                      href={`/products?category=${cat.slug}&subcategory=${sub.slug}`}
+                      onClick={onClose}
+                      className="text-sm font-body font-medium text-secondary hover:text-base-content transition-colors py-1.5"
+                    >
+                      {sub.name}
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </div>
+          ))}
 
           {navLinks.map((link) => (
             <Link
@@ -160,6 +209,9 @@ export default function MobileDrawer({ isOpen, onClose }) {
             </Link>
           ))}
         </nav>
+
+        {/* Currency selector */}
+        <CurrencySelector variant="mobile" />
 
         {/* Bottom: Account links */}
         <div className="px-4 py-4 border-t border-base-300 shrink-0 space-y-2">

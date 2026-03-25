@@ -9,7 +9,7 @@ export default function SectionHeader({
 }) {
   if (align === "center") {
     return (
-      <div className="flex flex-col items-center text-center mb-6 md:mb-8">
+      <div className="flex flex-col items-center text-center mb-4 md:mb-6">
         {eyebrow && (
           <span className="text-[11px] tracking-[0.2em] uppercase text-secondary font-body mb-1">
             {eyebrow}
@@ -37,7 +37,7 @@ export default function SectionHeader({
   }
 
   return (
-    <div className="mb-6 md:mb-8 border-b border-base-300 pb-4">
+    <div className="mb-4 md:mb-6 border-b border-base-300 pb-4">
       <div className="flex justify-between items-end">
         <div>
           {eyebrow && (

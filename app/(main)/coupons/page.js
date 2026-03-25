@@ -109,7 +109,7 @@ function CouponsContent() {
         {/* Grid */}
         <CouponGrid
           coupons={filtered}
-          onClaim={(coupon) => setActiveCoupon(coupon)}
+          onSelect={(coupon) => setActiveCoupon(coupon)}
         />
       </main>
 

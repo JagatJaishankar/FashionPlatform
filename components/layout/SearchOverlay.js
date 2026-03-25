@@ -9,10 +9,11 @@ import {
   placeholderBrands,
   placeholderCategories,
 } from "@/lib/placeholder-data";
-import { formatPrice } from "@/lib/utils";
+import { useCurrency } from "@/lib/currency-context";
 
 export default function SearchOverlay({ isOpen, onClose }) {
   const router = useRouter();
+  const { formatPrice } = useCurrency();
   const inputRef = useRef(null);
   const [query, setQuery] = useState("");
   const [results, setResults] = useState({ products: [], brands: [], categories: [] });

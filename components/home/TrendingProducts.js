@@ -3,7 +3,7 @@ import ProductCard from "@/components/ui/ProductCard";
 
 export default function TrendingProducts({ products }) {
   return (
-    <section className="py-10 md:py-14">
+    <section className="py-8 md:py-12">
       <div className="max-w-[1520px] mx-auto px-4 md:px-6 lg:px-8">
         <SectionHeader
           eyebrow="TRENDING NOW"
@@ -11,7 +11,7 @@ export default function TrendingProducts({ products }) {
           linkLabel="See All"
           linkHref="/products?tag=trending"
         />
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4 md:gap-5">
+        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-3 md:gap-4">
           {products.map((product, i) => (
             <ProductCard
               key={product.id}

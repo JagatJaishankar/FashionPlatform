@@ -1,17 +1,19 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useCallback } from "react";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import { Suspense } from "react";
 import MobileDrawer from "./MobileDrawer";
 import SearchOverlay from "./SearchOverlay";
+import MegaMenu from "./MegaMenu";
+import CurrencySelector from "./CurrencySelector";
 
-const womenSubcategories = [
-  { name: "Clothing", slug: "clothing" },
-  { name: "Shoes", slug: "shoes" },
-  { name: "Bags", slug: "bags" },
-  { name: "Jewellery", slug: "jewellery" },
+const categoryLinks = [
+  { label: "Clothing", slug: "clothing" },
+  { label: "Shoes", slug: "shoes" },
+  { label: "Bags", slug: "bags" },
+  { label: "Jewellery", slug: "jewellery" },
 ];
 
 const navLinks = [
@@ -47,31 +49,31 @@ function NavbarContent() {
   const searchParams = useSearchParams();
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
-  const [womenOpen, setWomenOpen] = useState(false);
-  const womenTimeout = useRef(null);
+  const [activeMega, setActiveMega] = useState(null);
+  const megaTimeout = useRef(null);
 
   const currentCategory = searchParams.get("category") || "";
 
-  function isWomenActive() {
-    return pathname === "/products" || pathname.startsWith("/products/");
+  function isCategoryActive(slug) {
+    return pathname === "/products" && currentCategory === slug;
   }
 
   function isLinkActive(match) {
     return pathname === match || pathname.startsWith(match + "/");
   }
 
-  function isCategoryActive(slug) {
-    return pathname === "/products" && currentCategory === slug;
-  }
+  const handleMegaEnter = useCallback((slug) => {
+    clearTimeout(megaTimeout.current);
+    setActiveMega(slug);
+  }, []);
 
-  function handleWomenEnter() {
-    clearTimeout(womenTimeout.current);
-    setWomenOpen(true);
-  }
+  const handleMegaLeave = useCallback(() => {
+    megaTimeout.current = setTimeout(() => setActiveMega(null), 100);
+  }, []);
 
-  function handleWomenLeave() {
-    womenTimeout.current = setTimeout(() => setWomenOpen(false), 150);
-  }
+  const closeMega = useCallback(() => {
+    setActiveMega(null);
+  }, []);
 
   return (
     <>
@@ -95,48 +97,27 @@ function NavbarContent() {
           </div>
 
           {/* Center nav links */}
-          <div className="hidden lg:flex items-center gap-8 absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
-            {/* Women dropdown */}
-            <div
-              className="relative"
-              onMouseEnter={handleWomenEnter}
-              onMouseLeave={handleWomenLeave}
-            >
-              <Link
-                href="/products"
-                className={`text-sm font-body font-medium py-1 transition-colors ${
-                  isWomenActive()
-                    ? "text-base-content font-semibold border-b-2 border-primary"
-                    : "text-base-content hover:text-primary"
-                }`}
-                aria-haspopup="true"
-                aria-expanded={womenOpen}
+          <div className="hidden lg:flex items-center gap-7 absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+            {/* Category links with mega dropdowns */}
+            {categoryLinks.map((cat) => (
+              <div
+                key={cat.slug}
+                className="relative"
+                onMouseEnter={() => handleMegaEnter(cat.slug)}
+                onMouseLeave={handleMegaLeave}
               >
-                Women
-              </Link>
-              {womenOpen && (
-                <div
-                  className="absolute top-full left-0 mt-2 bg-base-100 border border-base-300 shadow-lg min-w-[160px] py-2"
-                  role="menu"
+                <Link
+                  href={`/products?category=${cat.slug}`}
+                  className={`text-sm font-body font-medium py-1 transition-colors ${
+                    isCategoryActive(cat.slug)
+                      ? "text-base-content font-semibold border-b-2 border-primary"
+                      : "text-base-content hover:text-primary"
+                  }`}
                 >
-                  {womenSubcategories.map((cat) => (
-                    <Link
-                      key={cat.slug}
-                      href={`/products?category=${cat.slug}`}
-                      className={`block px-4 py-2 text-sm font-body font-medium transition-colors ${
-                        isCategoryActive(cat.slug)
-                          ? "text-base-content font-semibold border-l-2 border-primary bg-base-200"
-                          : "text-base-content hover:bg-base-200 hover:text-primary"
-                      }`}
-                      role="menuitem"
-                      onClick={() => setWomenOpen(false)}
-                    >
-                      {cat.name}
-                    </Link>
-                  ))}
-                </div>
-              )}
-            </div>
+                  {cat.label}
+                </Link>
+              </div>
+            ))}
 
             {navLinks.map((link) => (
               <Link
@@ -159,7 +140,7 @@ function NavbarContent() {
             <button
               type="button"
               onClick={() => setSearchOpen(true)}
-              className="hidden lg:flex items-center gap-2 text-secondary hover:text-base-content transition-colors cursor-pointer border-b border-base-300 pb-1 mr-4"
+              className="hidden lg:flex items-center gap-2 text-secondary hover:text-base-content transition-colors cursor-pointer border-b border-base-300 pb-1 mr-3"
               aria-label="Open search"
             >
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-3.5 h-3.5">
@@ -167,6 +148,11 @@ function NavbarContent() {
               </svg>
               <span className="text-xs font-body text-secondary/50">Search...</span>
             </button>
+
+            {/* Currency selector — desktop */}
+            <div className="hidden lg:block mr-2">
+              <CurrencySelector />
+            </div>
 
             {/* Wishlist icon */}
             <Link
@@ -211,6 +197,16 @@ function NavbarContent() {
             </button>
           </div>
         </nav>
+
+        {/* Mega Menu — renders below the nav bar */}
+        {activeMega && categoryLinks.some((c) => c.slug === activeMega) && (
+          <div
+            onMouseEnter={() => handleMegaEnter(activeMega)}
+            onMouseLeave={handleMegaLeave}
+          >
+            <MegaMenu category={activeMega} onClose={closeMega} />
+          </div>
+        )}
       </header>
 
       <SearchOverlay isOpen={searchOpen} onClose={() => setSearchOpen(false)} />

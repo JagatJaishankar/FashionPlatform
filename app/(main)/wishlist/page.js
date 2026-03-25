@@ -1,5 +1,7 @@
-import Link from "next/link";
+"use client";
+
 import BreadcrumbNav from "@/components/ui/BreadcrumbNav";
+import { useAuthModal } from "@/lib/auth-modal-context";
 
 const breadcrumbs = [
   { label: "Home", href: "/" },
@@ -7,6 +9,8 @@ const breadcrumbs = [
 ];
 
 export default function WishlistPage() {
+  const { openAuthModal } = useAuthModal();
+
   return (
     <main className="max-w-[1520px] mx-auto px-4 md:px-6 lg:px-8 py-6 md:py-10">
       <BreadcrumbNav items={breadcrumbs} />
@@ -36,12 +40,13 @@ export default function WishlistPage() {
         <p className="text-sm text-secondary mt-2 max-w-sm">
           Save your favourite pieces and keep track of price drops by signing in to your account.
         </p>
-        <Link
-          href="/login"
-          className="btn btn-sm bg-base-content text-base-100 hover:bg-base-content/80 mt-6 text-[11px] tracking-[0.15em] uppercase font-body"
+        <button
+          type="button"
+          onClick={openAuthModal}
+          className="btn btn-sm bg-base-content text-base-100 hover:bg-base-content/80 mt-6 text-[11px] tracking-[0.15em] uppercase font-body cursor-pointer"
         >
           Sign In
-        </Link>
+        </button>
       </div>
     </main>
   );

@@ -1,6 +1,7 @@
 import { Cormorant, Manrope } from "next/font/google";
 import "./globals.css";
-import { WishlistProvider } from "@/lib/wishlist-context";
+import { CurrencyProvider } from "@/lib/currency-context";
+import { AuthModalProvider } from "@/lib/auth-modal-context";
 import { QuickViewProvider } from "@/lib/quickview-context";
 
 const cormorant = Cormorant({
@@ -47,11 +48,13 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en" data-theme="adil" className={`${cormorant.variable} ${manrope.variable}`}>
       <body className="bg-base-100 text-base-content font-body antialiased">
-        <WishlistProvider>
-          <QuickViewProvider>
-            {children}
-          </QuickViewProvider>
-        </WishlistProvider>
+        <CurrencyProvider>
+          <AuthModalProvider>
+            <QuickViewProvider>
+              {children}
+            </QuickViewProvider>
+          </AuthModalProvider>
+        </CurrencyProvider>
       </body>
     </html>
   );

@@ -4,7 +4,7 @@ import SectionHeader from "@/components/ui/SectionHeader";
 
 export default function BlogPreview({ posts }) {
   return (
-    <section className="py-10 md:py-14 border-t border-base-300">
+    <section className="py-8 md:py-12 border-t border-base-300">
       <div className="max-w-[1520px] mx-auto px-4 md:px-6 lg:px-8">
         <SectionHeader
           heading="From the Blog"

@@ -101,18 +101,16 @@ html {
 .coupon-tear::before {
   content: "";
   position: absolute;
-  top: -6px;
+  top: -8px;
   left: 0;
   right: 0;
-  height: 6px;
+  height: 8px;
   background: radial-gradient(
-    circle at 8px -2px,
-    oklch(98% 0.0044 78.2) 6px,
-    oklch(93.7% 0.0069 88.7) 6px,
-    oklch(93.7% 0.0069 88.7) 6.5px,
-    transparent 6.5px
+    circle at 8px 0,
+    transparent 5px,
+    oklch(93.7% 0.0069 88.7) 5px
   );
-  background-size: 16px 6px;
+  background-size: 16px 8px;
   background-repeat: repeat-x;
 }
 

@@ -115,10 +115,10 @@ export default async function ProductPage({ params }) {
               rel="noopener noreferrer"
               className="btn bg-base-content text-base-100 hover:bg-neutral w-full py-3 text-[11px] tracking-[0.2em] uppercase font-body font-semibold"
             >
-              Shop Now at {product.merchant} &rarr;
+              SHOP NOW &rarr;
             </a>
             <p className="text-xs text-secondary mt-2 text-center">
-              You will be redirected to {product.merchant}
+              You will be redirected to an external site
             </p>
 
             <div className="border-t border-base-300 my-6" />

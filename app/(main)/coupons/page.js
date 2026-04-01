@@ -2,7 +2,7 @@
 
 import { Suspense, useMemo, useState, useCallback } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
-import { placeholderCoupons, placeholderBrands } from "@/lib/placeholder-data";
+import { placeholderBrands, getActiveCoupons } from "@/lib/placeholder-data";
 import BreadcrumbNav from "@/components/ui/BreadcrumbNav";
 import CouponFilters from "@/components/coupon/CouponFilters";
 import CouponGrid from "@/components/coupon/CouponGrid";
@@ -13,8 +13,9 @@ const breadcrumbs = [
   { label: "Coupons" },
 ];
 
-// Brands that actually have coupons
-const couponBrandSlugs = [...new Set(placeholderCoupons.map((c) => c.brandSlug))];
+// Brands that actually have active coupons
+const activeCoupons = getActiveCoupons();
+const couponBrandSlugs = [...new Set(activeCoupons.map((c) => c.brandSlug))];
 const couponBrands = placeholderBrands.filter((b) =>
   couponBrandSlugs.includes(b.slug)
 );
@@ -58,7 +59,7 @@ function CouponsContent() {
   );
 
   const filtered = useMemo(() => {
-    let result = [...placeholderCoupons];
+    let result = [...activeCoupons];
 
     if (brand) {
       result = result.filter((c) => c.brandSlug === brand);

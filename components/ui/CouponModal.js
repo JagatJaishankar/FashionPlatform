@@ -136,12 +136,13 @@ export default function CouponModal({
           <div className="border-t border-base-300 my-4" />
 
           {/* CTA */}
-          <a
-            href={storeUrl}
-            className="btn bg-base-content text-base-100 hover:bg-neutral w-full py-3 text-[11px] tracking-[0.2em] uppercase font-body font-semibold transition-colors block text-center"
+          <button
+            type="button"
+            onClick={() => window.open(storeUrl, "_blank")}
+            className="w-full py-3.5 bg-base-content text-base-100 text-[11px] tracking-[0.2em] uppercase font-body font-semibold text-center hover:bg-neutral transition-colors cursor-pointer"
           >
             GO TO STORE &rarr;
-          </a>
+          </button>
 
           {/* Related coupons */}
           {showBrand && relatedCoupons.length > 0 && (

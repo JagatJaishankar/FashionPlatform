@@ -1,10 +1,10 @@
 import {
   placeholderProducts,
-  placeholderCoupons,
   placeholderCategories,
   placeholderBrands,
   placeholderBlogPosts,
   getProductsByCategory,
+  getActiveCoupons,
 } from "@/lib/placeholder-data";
 
 import BannerCarousel from "@/components/home/BannerCarousel";
@@ -28,7 +28,7 @@ const clothingProducts = getProductsByCategory("clothing").slice(0, 5);
 const shoesProducts = getProductsByCategory("shoes").slice(0, 5);
 const bagsProducts = getProductsByCategory("bags").slice(0, 5);
 
-const latestCoupons = placeholderCoupons.slice(0, 4);
+const latestCoupons = getActiveCoupons().slice(0, 4);
 const featuredBrands = placeholderBrands.slice(0, 10);
 
 export default function Home() {

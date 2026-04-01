@@ -59,7 +59,7 @@ export default function CouponCard({ coupon, onClick, className = "" }) {
       {/* Zone 2 — Main content */}
       <div className="px-4 pt-10 pb-4 md:px-5 flex items-center gap-4 flex-1">
         <div className="flex-1 min-w-0">
-          <p className="text-lg font-display font-bold text-base-content leading-snug line-clamp-2">
+          <p className="text-lg font-display font-bold text-base-content leading-snug line-clamp-1">
             {coupon.discountHeadline}
           </p>
           {coupon.description && (
@@ -76,7 +76,7 @@ export default function CouponCard({ coupon, onClick, className = "" }) {
       </div>
 
       {/* Zone 3 — Bottom bar with scalloped edge */}
-      <div className="coupon-tear px-4 py-3 md:px-5 flex items-center justify-between bg-base-200 mt-auto">
+      <div className="coupon-tear px-4 py-3 md:px-5 flex items-center justify-between bg-base-300 border-t border-base-300 mt-auto">
         {coupon.code ? (
           <div className="flex items-center gap-2">
             <span className="font-mono text-sm tracking-widest font-semibold text-base-content">

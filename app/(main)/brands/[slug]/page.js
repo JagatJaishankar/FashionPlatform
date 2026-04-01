@@ -2,7 +2,8 @@ import { notFound } from "next/navigation";
 import {
   getBrandBySlug,
   getProductsByBrand,
-  getCouponsByBrand,
+  getActiveCouponsByBrand,
+  getExpiredCouponsByBrand,
   placeholderBrands,
 } from "@/lib/placeholder-data";
 import BreadcrumbNav from "@/components/ui/BreadcrumbNav";
@@ -30,7 +31,8 @@ export default async function BrandPage({ params }) {
   }
 
   const products = getProductsByBrand(slug);
-  const coupons = getCouponsByBrand(slug);
+  const activeCoupons = getActiveCouponsByBrand(slug);
+  const expiredCoupons = getExpiredCouponsByBrand(slug);
   const otherBrands = placeholderBrands
     .filter((b) => b.slug !== slug)
     .slice(0, 10);
@@ -45,8 +47,8 @@ export default async function BrandPage({ params }) {
     <>
       <main className="max-w-[1520px] mx-auto px-4 md:px-6 lg:px-8 py-6 md:py-10">
         <BreadcrumbNav items={breadcrumbs} />
-        <BrandHeader brand={brand} />
-        <BrandCoupons brand={brand.name} coupons={coupons} />
+        <BrandHeader brand={brand} productCount={products.length} couponCount={activeCoupons.length} />
+        <BrandCoupons brand={brand.name} activeCoupons={activeCoupons} expiredCoupons={expiredCoupons} />
         <BrandProducts
           brand={brand.name}
           brandSlug={brand.slug}

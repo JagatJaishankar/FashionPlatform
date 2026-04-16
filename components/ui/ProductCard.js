@@ -20,6 +20,7 @@ export default function ProductCard({
   redirectUrl,
   category,
   categorySlug,
+  priority = false,
   className = "",
 }) {
   const { openQuickView } = useQuickView();
@@ -28,7 +29,8 @@ export default function ProductCard({
 
   const hasSale = tags.includes("sale") && originalPrice;
   const hasTrending = tags.includes("trending");
-  const discount = hasSale ? getDiscountPercentage(price, originalPrice) : 0;
+  const hasDiscount = originalPrice && originalPrice > price;
+  const discountPercentage = hasDiscount ? getDiscountPercentage(price, originalPrice) : 0;
 
   function handleCardClick() {
     openQuickView({
@@ -62,6 +64,8 @@ export default function ProductCard({
           fill
           sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"
           className="object-cover transition-transform duration-500 group-hover:scale-105"
+          priority={priority}
+          loading={priority ? "eager" : "lazy"}
         />
         {/* Tag badges — top left */}
         {(hasSale || hasTrending) && (
@@ -87,27 +91,31 @@ export default function ProductCard({
 
       {/* Info section */}
       <div className="mt-2.5">
-        {/* Row 1: Price left, Heart right */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center">
-            <span className="text-sm font-semibold text-base-content">
-              {formatPrice(price)}
-            </span>
-            {hasSale && (
-              <>
-                <span className="text-xs text-secondary line-through ml-1.5">
+        {/* Row 1 + discount: Price stack left, Heart right */}
+        <div className="flex items-start justify-between gap-2">
+          <div className="flex flex-col gap-0.5 min-w-0">
+            {/* Prices */}
+            <div className="flex items-center gap-2">
+              {hasDiscount && (
+                <span className="text-sm text-secondary line-through">
                   {formatPrice(originalPrice)}
                 </span>
-                <span className="text-xs text-error ml-1.5">
-                  -{discount}%
-                </span>
-              </>
+              )}
+              <span className={`text-sm font-semibold ${hasDiscount ? "text-error" : "text-base-content"}`}>
+                {formatPrice(price)}
+              </span>
+            </div>
+            {/* Discount percentage */}
+            {hasDiscount && (
+              <span className="text-xs font-medium text-error">
+                -{discountPercentage}%
+              </span>
             )}
           </div>
           <button
             type="button"
             onClick={handleWishlistClick}
-            className="group/heart shrink-0 text-base-content/40 hover:text-error transition-colors duration-200 cursor-pointer"
+            className="group/heart shrink-0 mt-0.5 text-base-content/40 hover:text-error transition-colors duration-200 cursor-pointer"
             aria-label="Save to wishlist"
           >
             <svg

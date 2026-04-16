@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useState, useMemo } from "react";
+import { Suspense, useState, useMemo, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import { searchProducts, searchCoupons } from "@/lib/placeholder-data";
 import BreadcrumbNav from "@/components/ui/BreadcrumbNav";
@@ -29,9 +29,15 @@ function SearchContent() {
   const [activeCoupon, setActiveCoupon] = useState(null);
 
   const products = useMemo(() => (query ? searchProducts(query) : []), [query]);
-  const coupons = useMemo(() => (query ? searchCoupons(query) : []), [query]);
+  const coupons  = useMemo(() => (query ? searchCoupons(query)  : []), [query]);
 
   const hasResults = products.length > 0 || coupons.length > 0;
+
+  const [visibleCount, setVisibleCount] = useState(12);
+  useEffect(() => { setVisibleCount(12); }, [query]);
+
+  const visibleProducts = products.slice(0, visibleCount);
+  const hasMore = visibleCount < products.length;
 
   return (
     <>
@@ -92,12 +98,23 @@ function SearchContent() {
             <div className="mt-8">
               {activeTab === "products" && (
                 products.length > 0 ? (
-                  <ProductGrid
-                    products={products}
-                    currentPage={1}
-                    totalPages={1}
-                    onPageChange={() => {}}
-                  />
+                  <>
+                    <ProductGrid products={visibleProducts} />
+                    <div className="flex flex-col items-center gap-3 mt-10 md:mt-14">
+                      {hasMore && (
+                        <button
+                          type="button"
+                          onClick={() => setVisibleCount((prev) => Math.min(prev + 12, products.length))}
+                          className="px-12 py-3.5 bg-base-content text-base-100 text-[11px] tracking-[0.25em] uppercase font-semibold hover:bg-neutral transition-colors cursor-pointer"
+                        >
+                          Show More
+                        </button>
+                      )}
+                      <p className="text-xs text-secondary">
+                        You&apos;ve viewed {Math.min(visibleCount, products.length)} out of {products.length} products
+                      </p>
+                    </div>
+                  </>
                 ) : (
                   <EmptyState
                     title="No products found"

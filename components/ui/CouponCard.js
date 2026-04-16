@@ -31,7 +31,17 @@ function getBadgeClasses(type) {
   }
 }
 
-export default function CouponCard({ coupon, onClick, className = "" }) {
+function getTypeLabel(type) {
+  switch (type) {
+    case "coupon-code": return "Promo Code";
+    case "sale": return "Sale";
+    case "cashback": return "Cashback";
+    case "free-shipping": return "Free Shipping";
+    default: return "Offer";
+  }
+}
+
+export default function CouponCard({ coupon, onClick, showBrand = true, className = "" }) {
   const [copied, setCopied] = useState(false);
 
   const badgeText = getBadgeText(coupon);
@@ -42,6 +52,42 @@ export default function CouponCard({ coupon, onClick, className = "" }) {
     navigator.clipboard.writeText(coupon.code);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
+  }
+
+  if (!showBrand) {
+    return (
+      <div
+        onClick={onClick}
+        className={`border border-base-300 hover:border-base-content/30 hover:shadow-sm transition-all cursor-pointer group overflow-hidden h-full flex flex-col bg-base-100 ${className}`}
+      >
+        {/* Top bar — type label + discount badge */}
+        <div className="bg-base-200 px-5 py-3 flex items-center justify-between">
+          <span className="text-[10px] tracking-[0.15em] uppercase text-secondary font-medium">
+            {getTypeLabel(coupon.type)}
+          </span>
+          <span className={`text-[10px] tracking-[0.15em] uppercase font-bold px-3 py-1 ${badgeClasses}`}>
+            {coupon.discount}
+          </span>
+        </div>
+
+        {/* Deal info */}
+        <div className="px-5 py-4 flex-1">
+          <p className="text-sm font-display font-semibold text-base-content leading-snug line-clamp-2">
+            {coupon.discountHeadline}
+          </p>
+        </div>
+
+        {/* Bottom bar — scalloped edge matches the full card's Zone 3 */}
+        <div className="coupon-tear px-5 py-3 flex items-center justify-between bg-base-300 mt-auto">
+          <span className="text-[10px] text-secondary">
+            {coupon.expiryDate ? "Limited time" : ""}
+          </span>
+          <span className="text-[11px] tracking-[0.15em] uppercase font-semibold text-primary group-hover:text-base-content transition-colors">
+            VIEW OFFER &rarr;
+          </span>
+        </div>
+      </div>
+    );
   }
 
   return (

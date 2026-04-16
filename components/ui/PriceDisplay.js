@@ -3,35 +3,34 @@
 import { getDiscountPercentage } from "@/lib/utils";
 import { useCurrency } from "@/lib/currency-context";
 
-const sizes = {
-  sm: { price: "text-sm font-semibold", original: "text-xs", discount: "text-xs" },
-  lg: { price: "text-xl font-semibold", original: "text-sm", discount: "text-sm" },
-};
-
-export default function PriceDisplay({
-  price,
-  originalPrice,
-  size = "sm",
-}) {
+export default function PriceDisplay({ price, originalPrice, size = "sm" }) {
   const { formatPrice } = useCurrency();
-  const s = sizes[size] || sizes.sm;
   const hasDiscount = originalPrice && originalPrice > price;
-  const discount = hasDiscount ? getDiscountPercentage(price, originalPrice) : 0;
+  const discountPercentage = hasDiscount ? getDiscountPercentage(price, originalPrice) : 0;
+
+  const originalClass = size === "lg" ? "text-base text-secondary line-through" : "text-sm text-secondary line-through";
+  const priceClass    = size === "lg" ? "text-lg font-semibold"                 : "text-sm font-semibold";
+  const discountClass = size === "lg" ? "text-sm font-medium text-error"        : "text-xs font-medium text-error";
 
   return (
-    <div className="flex items-center gap-2">
-      <span className={`${s.price} text-base-content`}>
-        {formatPrice(price)}
-      </span>
-      {hasDiscount && (
-        <>
-          <span className={`${s.original} text-secondary line-through`}>
+    <div className="flex flex-col gap-0.5">
+      {/* Line 1: prices */}
+      <div className="flex items-center gap-2">
+        {hasDiscount && (
+          <span className={originalClass}>
             {formatPrice(originalPrice)}
           </span>
-          <span className={`${s.discount} text-error font-medium`}>
-            -{discount}%
-          </span>
-        </>
+        )}
+        <span className={`${priceClass} ${hasDiscount ? "text-error" : "text-base-content"}`}>
+          {formatPrice(price)}
+        </span>
+      </div>
+
+      {/* Line 2: discount percentage */}
+      {hasDiscount && (
+        <span className={discountClass}>
+          -{discountPercentage}%
+        </span>
       )}
     </div>
   );

@@ -1,14 +1,7 @@
 import ProductCard from "@/components/ui/ProductCard";
 import EmptyState from "@/components/ui/EmptyState";
-import Pagination from "@/components/ui/Pagination";
 
-export default function ProductGrid({
-  products,
-  loading = false,
-  currentPage,
-  totalPages,
-  onPageChange,
-}) {
+export default function ProductGrid({ products, loading = false }) {
   if (loading) {
     return (
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
@@ -36,17 +29,10 @@ export default function ProductGrid({
   }
 
   return (
-    <div>
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
-        {products.map((product) => (
-          <ProductCard key={product.id} {...product} />
-        ))}
-      </div>
-      <Pagination
-        currentPage={currentPage}
-        totalPages={totalPages}
-        onPageChange={onPageChange}
-      />
+    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
+      {products.map((product, index) => (
+        <ProductCard key={product.id} {...product} priority={index < 4} />
+      ))}
     </div>
   );
 }

@@ -47,7 +47,7 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en" data-theme="adil" className={`${cormorant.variable} ${manrope.variable}`}>
-      <body className="bg-base-100 text-base-content font-body antialiased">
+      <body className="bg-base-100 text-base-content font-body antialiased" suppressHydrationWarning>
         <CurrencyProvider>
           <AuthModalProvider>
             <QuickViewProvider>

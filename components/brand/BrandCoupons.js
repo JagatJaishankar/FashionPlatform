@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import CouponRow from "@/components/ui/CouponRow";
+import CouponCard from "@/components/ui/CouponCard";
 import CouponModal from "@/components/ui/CouponModal";
 
 export default function BrandCoupons({ brand, activeCoupons = [], expiredCoupons = [] }) {
@@ -60,38 +60,35 @@ export default function BrandCoupons({ brand, activeCoupons = [], expiredCoupons
         {/* Active tab */}
         {activeTab === "active" && (
           activeCoupons.length > 0 ? (
-            <div className="border border-base-300 overflow-hidden">
+            <>
               <div
                 className={`relative transition-all duration-500 ease-in-out overflow-hidden ${
-                  expanded || activeCoupons.length <= 1
-                    ? "max-h-[2000px]"
-                    : "max-h-[220px]"
+                  expanded ? "max-h-[3000px]" : "max-h-[260px]"
                 }`}
               >
-                <div className="divide-y divide-base-300">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {activeCoupons.map((coupon) => (
-                    <CouponRow
+                    <CouponCard
                       key={coupon.id}
                       coupon={coupon}
+                      showBrand={false}
                       onClick={() => setActiveCoupon(coupon)}
                     />
                   ))}
                 </div>
 
-                {!expanded && activeCoupons.length > 1 && (
-                  <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-base-100 via-base-100/80 to-transparent pointer-events-none" />
+                {!expanded && activeCoupons.length > 3 && (
+                  <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-base-100 to-transparent pointer-events-none" />
                 )}
               </div>
 
-              {activeCoupons.length > 1 && (
+              {activeCoupons.length > 3 && (
                 <button
                   type="button"
                   onClick={() => setExpanded(!expanded)}
-                  className="py-2.5 px-5 flex items-center gap-1.5 text-[11px] tracking-[0.15em] uppercase font-semibold text-secondary hover:text-base-content transition-colors cursor-pointer"
+                  className="w-full py-3 mt-4 flex items-center justify-center gap-2 text-[11px] tracking-[0.15em] uppercase font-semibold text-secondary hover:text-base-content transition-colors border border-base-300 cursor-pointer"
                 >
-                  {expanded
-                    ? "Show Less"
-                    : `View More Offers (${activeCoupons.length - 1})`}
+                  {expanded ? "Show Less" : `View More Offers (${activeCoupons.length - 3})`}
                   <svg
                     width="14"
                     height="14"
@@ -101,15 +98,13 @@ export default function BrandCoupons({ brand, activeCoupons = [], expiredCoupons
                     strokeWidth="2"
                     strokeLinecap="round"
                     strokeLinejoin="round"
-                    className={`transition-transform duration-300 ${
-                      expanded ? "rotate-180" : ""
-                    }`}
+                    className={`transition-transform duration-300 ${expanded ? "rotate-180" : ""}`}
                   >
                     <polyline points="6 9 12 15 18 9" />
                   </svg>
                 </button>
               )}
-            </div>
+            </>
           ) : (
             <p className="text-sm text-secondary py-8 text-center">
               No active offers right now
@@ -120,16 +115,15 @@ export default function BrandCoupons({ brand, activeCoupons = [], expiredCoupons
         {/* Expired tab */}
         {activeTab === "expired" && (
           expiredCoupons.length > 0 ? (
-            <div className="border border-base-300 opacity-50 grayscale overflow-hidden">
-              <div className="divide-y divide-base-300">
-                {expiredCoupons.map((coupon) => (
-                  <CouponRow
-                    key={coupon.id}
-                    coupon={coupon}
-                    onClick={() => setActiveCoupon(coupon)}
-                  />
-                ))}
-              </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 opacity-50 grayscale">
+              {expiredCoupons.map((coupon) => (
+                <CouponCard
+                  key={coupon.id}
+                  coupon={coupon}
+                  showBrand={false}
+                  onClick={() => setActiveCoupon(coupon)}
+                />
+              ))}
             </div>
           ) : (
             <p className="text-sm text-secondary py-8 text-center">

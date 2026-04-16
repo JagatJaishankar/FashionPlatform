@@ -1,19 +1,18 @@
 "use client";
 
-import { Suspense, useMemo, useCallback } from "react";
+import { Suspense, useMemo, useCallback, useState, useEffect } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import {
   placeholderProducts,
   placeholderCategories,
-  placeholderBrands,
   getBrandBySlug,
 } from "@/lib/placeholder-data";
 import BreadcrumbNav from "@/components/ui/BreadcrumbNav";
-import SortDropdown from "@/components/ui/SortDropdown";
-import FilterSidebar from "@/components/ui/FilterSidebar";
+import FilterBar from "@/components/ui/FilterBar";
 import ProductGrid from "@/components/product/ProductGrid";
+import EmptyState from "@/components/ui/EmptyState";
 
-const PRODUCTS_PER_PAGE = 8;
+const BATCH = 12;
 
 export default function ProductsPage() {
   return (
@@ -27,34 +26,72 @@ function ProductsContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
 
-  const category = searchParams.get("category") || "";
-  const brand = searchParams.get("brand") || "";
-  const tag = searchParams.get("tag") || "";
-  const sort = searchParams.get("sort") || "newest";
-  const query = searchParams.get("q") || "";
-  const page = parseInt(searchParams.get("page") || "1", 10);
+  const [visibleCount, setVisibleCount] = useState(BATCH);
 
-  function updateParams(updates) {
-    const params = new URLSearchParams(searchParams.toString());
-    Object.entries(updates).forEach(([key, value]) => {
-      if (value === null || value === undefined || value === "") {
-        params.delete(key);
-      } else {
-        params.set(key, value);
-      }
-    });
-    // Reset to page 1 when filters change (unless we're just changing pages)
-    if (!("page" in updates)) {
-      params.delete("page");
-    }
-    router.push(`/products?${params.toString()}`, { scroll: false });
+  // Reset to first batch whenever URL filters change
+  useEffect(() => {
+    setVisibleCount(BATCH);
+  }, [searchParams]);
+
+  // New multi-value params (from FilterBar)
+  const categoriesParam = searchParams.get("categories") || "";
+  const designersParam  = searchParams.get("designers")  || "";
+  const sizesParam      = searchParams.get("sizes")      || "";
+  const colorsParam     = searchParams.get("colors")     || "";
+  const priceParam      = searchParams.get("price")      || "";
+
+  // Legacy single-value params (from nav links: ?category=shoes, ?brand=gucci)
+  const legacyCategoryParam = searchParams.get("category") || "";
+  const legacyBrandParam    = searchParams.get("brand")    || "";
+
+  const tagParam   = searchParams.get("tag")  || "";
+  const sort       = searchParams.get("sort") || "newest";
+  const queryParam = searchParams.get("q")    || "";
+
+  const activeFilters = useMemo(() => ({
+    categories: categoriesParam
+      ? categoriesParam.split(",").filter(Boolean)
+      : legacyCategoryParam
+      ? [legacyCategoryParam]
+      : [],
+    designers: designersParam
+      ? designersParam.split(",").filter(Boolean)
+      : legacyBrandParam
+      ? [legacyBrandParam]
+      : [],
+    sizes:  sizesParam  ? sizesParam.split(",").filter(Boolean)  : [],
+    colors: colorsParam ? colorsParam.split(",").filter(Boolean) : [],
+    price:  priceParam,
+  }), [categoriesParam, designersParam, sizesParam, colorsParam, priceParam, legacyCategoryParam, legacyBrandParam]);
+
+  function buildUrl(newFilters, newSort) {
+    const params = new URLSearchParams();
+    if (queryParam) params.set("q", queryParam);
+    if (tagParam)   params.set("tag", tagParam);
+    if (newFilters.categories?.length) params.set("categories", newFilters.categories.join(","));
+    if (newFilters.designers?.length)  params.set("designers",  newFilters.designers.join(","));
+    if (newFilters.sizes?.length)      params.set("sizes",      newFilters.sizes.join(","));
+    if (newFilters.colors?.length)     params.set("colors",     newFilters.colors.join(","));
+    if (newFilters.price)              params.set("price",      newFilters.price);
+    const s = newSort ?? sort;
+    if (s && s !== "newest")           params.set("sort",       s);
+    return `/products?${params.toString()}`;
   }
 
+  const handleFilterChange = useCallback((newFilters) => {
+    router.push(buildUrl(newFilters), { scroll: false });
+  }, [queryParam, tagParam, sort]);
+
+  const handleSortChange = useCallback((newSort) => {
+    router.push(buildUrl(activeFilters, newSort), { scroll: false });
+  }, [activeFilters, queryParam, tagParam]);
+
+  // Filter + sort
   const filtered = useMemo(() => {
     let result = [...placeholderProducts];
 
-    if (query) {
-      const q = query.toLowerCase();
+    if (queryParam) {
+      const q = queryParam.toLowerCase();
       result = result.filter(
         (p) =>
           p.name.toLowerCase().includes(q) ||
@@ -63,154 +100,122 @@ function ProductsContent() {
       );
     }
 
-    if (category) {
-      result = result.filter((p) => p.categorySlug === category);
+    if (activeFilters.categories.length > 0) {
+      result = result.filter((p) => activeFilters.categories.includes(p.categorySlug));
     }
 
-    if (brand) {
-      result = result.filter((p) => p.brandSlug === brand);
+    if (activeFilters.designers.length > 0) {
+      result = result.filter((p) => activeFilters.designers.includes(p.brandSlug));
     }
 
-    if (tag) {
-      result = result.filter((p) => p.tags.includes(tag));
+    if (activeFilters.sizes.length > 0) {
+      result = result.filter(
+        (p) => !p.sizes || p.sizes.some((s) => activeFilters.sizes.includes(s))
+      );
+    }
+
+    if (activeFilters.colors.length > 0) {
+      result = result.filter(
+        (p) => !p.colors || p.colors.some((c) => activeFilters.colors.includes(c))
+      );
+    }
+
+    if (activeFilters.price) {
+      const [min, max] = activeFilters.price.split("-").map(Number);
+      result = result.filter((p) => p.price >= min && p.price <= max);
+    }
+
+    if (tagParam) {
+      result = result.filter((p) => p.tags.includes(tagParam));
     }
 
     switch (sort) {
-      case "price-asc":
-        result.sort((a, b) => a.price - b.price);
-        break;
-      case "price-desc":
-        result.sort((a, b) => b.price - a.price);
-        break;
+      case "price-asc":  result.sort((a, b) => a.price - b.price); break;
+      case "price-desc": result.sort((a, b) => b.price - a.price); break;
       case "trending":
-        result.sort((a, b) => {
-          const aT = a.tags.includes("trending") ? 1 : 0;
-          const bT = b.tags.includes("trending") ? 1 : 0;
-          return bT - aT;
-        });
+        result.sort((a, b) => (b.tags.includes("trending") ? 1 : 0) - (a.tags.includes("trending") ? 1 : 0));
         break;
-      case "newest":
-      default:
-        // Keep original order as "newest"
-        break;
+      default: break;
     }
 
     return result;
-  }, [query, category, brand, tag, sort]);
+  }, [queryParam, activeFilters, tagParam, sort]);
 
-  const totalPages = Math.ceil(filtered.length / PRODUCTS_PER_PAGE);
-  const currentPage = Math.min(Math.max(page, 1), Math.max(totalPages, 1));
-  const paginatedProducts = filtered.slice(
-    (currentPage - 1) * PRODUCTS_PER_PAGE,
-    currentPage * PRODUCTS_PER_PAGE
-  );
+  const totalProducts  = filtered.length;
+  const visibleProducts = filtered.slice(0, visibleCount);
+  const hasMore        = visibleCount < totalProducts;
 
-  // Build page title
-  const categoryData = category
-    ? placeholderCategories.find((c) => c.slug === category)
+  // Page title
+  const singleCategory = activeFilters.categories.length === 1
+    ? placeholderCategories.find((c) => c.slug === activeFilters.categories[0])
     : null;
-  const brandData = brand ? getBrandBySlug(brand) : null;
+  const singleBrand = activeFilters.designers.length === 1
+    ? getBrandBySlug(activeFilters.designers[0])
+    : null;
+
   let pageTitle = "All Products";
-  if (query) pageTitle = `Results for "${query}"`;
-  else if (categoryData) pageTitle = categoryData.name;
-  else if (brandData) pageTitle = brandData.name;
-  else if (tag === "sale") pageTitle = "Sale";
-  else if (tag === "trending") pageTitle = "Trending";
-  else if (tag === "new") pageTitle = "New In";
+  if (queryParam)          pageTitle = `Results for "${queryParam}"`;
+  else if (singleCategory) pageTitle = singleCategory.name;
+  else if (singleBrand)    pageTitle = singleBrand.name;
+  else if (tagParam === "sale")     pageTitle = "Sale";
+  else if (tagParam === "trending") pageTitle = "Trending";
+  else if (tagParam === "new")      pageTitle = "New In";
 
   // Breadcrumbs
   const breadcrumbs = [{ label: "Home", href: "/" }];
-  if (categoryData) {
+  if (singleCategory) {
     breadcrumbs.push({ label: "Products", href: "/products" });
-    breadcrumbs.push({ label: categoryData.name });
-  } else if (brandData) {
+    breadcrumbs.push({ label: singleCategory.name });
+  } else if (singleBrand) {
     breadcrumbs.push({ label: "Products", href: "/products" });
-    breadcrumbs.push({ label: brandData.name });
+    breadcrumbs.push({ label: singleBrand.name });
   } else {
     breadcrumbs.push({ label: "Products" });
-  }
-
-  // Active filters for sidebar
-  const activeFilters = {
-    categories: category ? [category] : [],
-    brands: brand ? [brand] : [],
-    tags: tag ? [tag] : [],
-    priceRange: "",
-  };
-
-  const handleFilterChange = useCallback(
-    (newFilters) => {
-      const updates = {};
-
-      // Category — take first from array or clear
-      const newCat = newFilters.categories?.[0] || "";
-      if (newCat !== category) updates.category = newCat;
-
-      // Brand
-      const newBrand = newFilters.brands?.[0] || "";
-      if (newBrand !== brand) updates.brand = newBrand;
-
-      // Tag
-      const newTag = newFilters.tags?.[0] || "";
-      if (newTag !== tag) updates.tag = newTag;
-
-      // Price range — filter client-side via URL param
-      if (newFilters.priceRange) {
-        updates.price = newFilters.priceRange;
-      } else {
-        updates.price = "";
-      }
-
-      updateParams(updates);
-    },
-    [category, brand, tag, searchParams]
-  );
-
-  function handleSortChange(value) {
-    updateParams({ sort: value });
-  }
-
-  function handlePageChange(newPage) {
-    updateParams({ page: newPage > 1 ? String(newPage) : "" });
-    window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
   return (
     <main className="max-w-[1520px] mx-auto px-4 md:px-6 lg:px-8 py-6 md:py-10">
       <BreadcrumbNav items={breadcrumbs} />
 
-      {/* Top bar */}
-      <div className="flex items-center justify-between mb-6 md:mb-8">
-        <div>
-          <h1 className="text-2xl md:text-3xl font-display text-base-content">
-            {pageTitle}
-          </h1>
-          <p className="text-xs text-secondary mt-1">
-            ({filtered.length} {filtered.length === 1 ? "product" : "products"})
-          </p>
-        </div>
-        <div className="flex items-center gap-3">
-          <SortDropdown value={sort} onChange={handleSortChange} />
-        </div>
-      </div>
+      <h1 className="text-2xl md:text-3xl font-display text-base-content mb-4">
+        {pageTitle}
+      </h1>
 
-      {/* Main content */}
-      <div className="lg:flex lg:gap-8">
-        <FilterSidebar
-          categories={placeholderCategories}
-          brands={placeholderBrands}
-          activeFilters={activeFilters}
-          onFilterChange={handleFilterChange}
+      <FilterBar
+        productCount={totalProducts}
+        activeFilters={activeFilters}
+        onFilterChange={handleFilterChange}
+        sort={sort}
+        onSortChange={handleSortChange}
+      />
+
+      {totalProducts > 0 ? (
+        <>
+          <ProductGrid products={visibleProducts} />
+
+          <div className="flex flex-col items-center gap-3 mt-10 md:mt-14">
+            {hasMore && (
+              <button
+                type="button"
+                onClick={() => setVisibleCount((prev) => Math.min(prev + BATCH, totalProducts))}
+                className="px-12 py-3.5 bg-base-content text-base-100 text-[11px] tracking-[0.25em] uppercase font-semibold hover:bg-neutral transition-colors cursor-pointer"
+              >
+                Show More
+              </button>
+            )}
+            <p className="text-xs text-secondary">
+              You&apos;ve viewed {Math.min(visibleCount, totalProducts)} out of {totalProducts} products
+            </p>
+          </div>
+        </>
+      ) : (
+        <EmptyState
+          title="No products found"
+          description="Try adjusting your filters to find what you're looking for."
+          actionLabel="View All Products"
+          actionHref="/products"
         />
-        <div className="flex-1 min-w-0 mt-4 lg:mt-0">
-          <ProductGrid
-            products={paginatedProducts}
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={handlePageChange}
-          />
-        </div>
-      </div>
+      )}
     </main>
   );
 }

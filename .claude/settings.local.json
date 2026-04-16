@@ -3,7 +3,9 @@
     "allow": [
       "Bash(npx next:*)",
       "Bash(ls:*)",
-      "Read(//tmp/**)"
+      "Read(//tmp/**)",
+      "Bash(npm install:*)",
+      "Bash(npm run:*)"
     ]
   }
 }

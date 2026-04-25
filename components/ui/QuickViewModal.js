@@ -7,7 +7,6 @@ import Image from "next/image";
 import { useQuickView } from "@/lib/quickview-context";
 import { useAuthModal } from "@/lib/auth-modal-context";
 import { useCurrency } from "@/lib/currency-context";
-import { getDiscountPercentage } from "@/lib/utils";
 import { placeholderProducts } from "@/lib/placeholder-data";
 
 export default function QuickViewModal() {
@@ -98,9 +97,6 @@ export default function QuickViewModal() {
   const hasSale = product.tags?.includes("sale") && product.originalPrice;
   const hasTrending = product.tags?.includes("trending");
   const hasNew = product.tags?.includes("new");
-  const discount = hasSale
-    ? getDiscountPercentage(product.price, product.originalPrice)
-    : 0;
 
 
   const outlineHeart = (
@@ -216,14 +212,9 @@ export default function QuickViewModal() {
                   {formatPrice(product.price)}
                 </span>
                 {hasSale && (
-                  <>
-                    <span className="text-sm text-secondary line-through">
-                      {formatPrice(product.originalPrice)}
-                    </span>
-                    <span className="text-sm text-error font-medium">
-                      -{discount}%
-                    </span>
-                  </>
+                  <span className="text-sm text-secondary line-through">
+                    {formatPrice(product.originalPrice)}
+                  </span>
                 )}
               </div>
 
@@ -374,14 +365,9 @@ export default function QuickViewModal() {
                 {formatPrice(product.price)}
               </span>
               {hasSale && (
-                <>
-                  <span className="text-sm text-secondary line-through">
-                    {formatPrice(product.originalPrice)}
-                  </span>
-                  <span className="text-sm text-error font-medium">
-                    -{discount}%
-                  </span>
-                </>
+                <span className="text-sm text-secondary line-through">
+                  {formatPrice(product.originalPrice)}
+                </span>
               )}
             </div>
 

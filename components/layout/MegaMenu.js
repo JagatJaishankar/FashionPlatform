@@ -171,10 +171,10 @@ export default function MegaMenu({ category, onClose }) {
                         {product.name}
                       </p>
                       <div className="flex items-center gap-1.5 mt-1">
-                        <span className="text-sm font-semibold text-error">
+                        <span className={`text-sm font-semibold ${product.originalPrice && product.originalPrice > product.price ? "text-error" : "text-base-content"}`}>
                           {formatPrice(product.price)}
                         </span>
-                        {product.originalPrice && (
+                        {product.originalPrice && product.originalPrice > product.price && (
                           <span className="text-xs text-secondary line-through">
                             {formatPrice(product.originalPrice)}
                           </span>

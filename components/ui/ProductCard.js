@@ -1,7 +1,6 @@
 "use client";
 
 import Image from "next/image";
-import { getDiscountPercentage } from "@/lib/utils";
 import { useQuickView } from "@/lib/quickview-context";
 import { useAuthModal } from "@/lib/auth-modal-context";
 import { useCurrency } from "@/lib/currency-context";
@@ -30,7 +29,6 @@ export default function ProductCard({
   const hasSale = tags.includes("sale") && originalPrice;
   const hasTrending = tags.includes("trending");
   const hasDiscount = originalPrice && originalPrice > price;
-  const discountPercentage = hasDiscount ? getDiscountPercentage(price, originalPrice) : 0;
 
   function handleCardClick() {
     openQuickView({
@@ -91,58 +89,27 @@ export default function ProductCard({
 
       {/* Info section */}
       <div className="mt-2.5">
-        {/* Row 1 + discount: Price stack left, Heart right */}
-        <div className="flex items-start justify-between gap-2">
-          <div className="flex flex-col gap-0.5 min-w-0">
-            {/* Prices */}
-            <div className="flex items-center gap-2">
-              {hasDiscount && (
-                <span className="text-sm text-secondary line-through">
-                  {formatPrice(originalPrice)}
-                </span>
-              )}
-              <span className={`text-sm font-semibold ${hasDiscount ? "text-error" : "text-base-content"}`}>
-                {formatPrice(price)}
-              </span>
-            </div>
-            {/* Discount percentage */}
-            {hasDiscount && (
-              <span className="text-xs font-medium text-error">
-                -{discountPercentage}%
-              </span>
-            )}
-          </div>
-          <button
-            type="button"
-            onClick={handleWishlistClick}
-            className="group/heart shrink-0 mt-0.5 text-base-content/40 hover:text-error transition-colors duration-200 cursor-pointer"
-            aria-label="Save to wishlist"
-          >
-            <svg
-              width="18"
-              height="18"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="w-[18px] h-[18px] group-hover/heart:fill-current"
-            >
-              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
-            </svg>
-          </button>
-        </div>
-
-        {/* Row 2: Brand */}
-        <p className="text-[11px] tracking-[0.15em] uppercase text-secondary font-body mt-1">
+        {/* Row 1: Brand */}
+        <p className="text-[11px] tracking-[0.15em] uppercase text-secondary font-body">
           {brand}
         </p>
 
-        {/* Row 3: Product name */}
+        {/* Row 2: Product name */}
         <p className="text-sm font-medium text-base-content mt-0.5 line-clamp-1 font-body group-hover:underline">
           {name}
         </p>
+
+        {/* Row 3: Price */}
+        <div className="flex items-center gap-2 mt-1">
+          <span className={`text-sm font-semibold ${hasDiscount ? "text-error" : "text-base-content"}`}>
+            {formatPrice(price)}
+          </span>
+          {hasDiscount && (
+            <span className="text-sm text-secondary line-through">
+              {formatPrice(originalPrice)}
+            </span>
+          )}
+        </div>
       </div>
     </div>
   );

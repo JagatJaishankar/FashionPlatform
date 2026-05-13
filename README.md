@@ -1,36 +1,43 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Fashion Affiliate Platform
 
-## Getting Started
+> Fashion Affiliate Platform is a fashion storefront concept that turns curated product discovery into a clean, modern, affiliate-driven shopping experience.
 
-First, run the development server:
+<img width="800" alt="Screenshot 2026-05-13 at 6 14 32 PM" src="https://github.com/user-attachments/assets/eda588d6-3715-47c5-a534-6d2d5ccd33f6" />
+<img width="800" alt="Screenshot 2026-05-13 at 6 15 08 PM" src="https://github.com/user-attachments/assets/802a7de8-b730-41a3-aa92-77cd4308ad7d" />
+<img width="800" alt="Screenshot 2026-05-13 at 6 15 43 PM" src="https://github.com/user-attachments/assets/d98ea951-0454-47a9-8bec-e3a157c314d6" />
+<img width="800" alt="Screenshot 2026-05-13 at 6 16 08 PM" src="https://github.com/user-attachments/assets/b8bff0cf-66df-4eea-a8d3-55823228fc87" />
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+## The Problem
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+*Fashion discovery is often scattered across social media, brand websites, and large marketplaces, making the shopping experience feel noisy and unstructured. On the business side, affiliate products are usually displayed in generic layouts that do little to build trust, highlight curation, or create a premium browsing experience.*
 
-## Learn More
+## The Solution
 
-To learn more about Next.js, take a look at the following resources:
+*Fashion Affiliate Platform is a front-end concept that reimagines affiliate commerce through a modern, editorial-style storefront. It gives users a cleaner way to browse fashion products while showing how affiliate shopping can feel more curated, visually polished, and conversion-focused without sacrificing simplicity.*
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Key Features
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- **Curated Product Showcase** — Displays fashion products in a clean and visually organised layout.
+- **Affiliate-Ready Storefront** — Designed to support product discovery and click-through purchase journeys.
+- **Modern Shopping UI** — Uses polished cards, product sections, and strong visual hierarchy to create a premium feel.
+- **Responsive Design** — Adapts smoothly across desktop and mobile devices.
+- **Conversion-Focused Experience** — Encourages browsing, engagement, and outbound affiliate actions through thoughtful UX structure.
 
-## Deploy on Vercel
+## Tech Stack
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+| Category | Technology |
+|----------|-----------|
+| Frontend | Next.js, React, Tailwind CSS |
+| Backend | Next.js |
+| Deployment | Vercel |
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Live Demo
+
+🔗 **[Try it live →](https://fashion-affiliate-platform.vercel.app/)**
+
+---
+
+Built by [Jagat Jaishankar](https://jagatjaishankar.com) · [Twitter](https://x.com/JaishankarJagat) · [LinkedIn](https://linkedin.com/in/jagatjaishankar)
